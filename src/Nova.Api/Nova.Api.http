@@ -84,7 +84,7 @@ POST {{host}}/api/me/2fa/confirm
 Authorization: Bearer {{owner.response.body.$.accessToken}}
 Content-Type: application/json
 
-{ "code": "111363" }
+{ "code": "824326" }
 
 ### Вход владельца заново: теперь в ответе mfaToken вместо токенов
 # @name ownerPwd

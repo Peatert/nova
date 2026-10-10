@@ -28,6 +28,8 @@
   <ItemGroup>
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#06060C" />
     <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#06060C" BaseSize="160,160" />
+    <!-- Иконки вкладок: SVG → PNG нужных плотностей для Android и Windows (tab_home.svg → tab_home.png) -->
+    <MauiImage Include="Resources\Images\*" BaseSize="24,24" />
   </ItemGroup>
 
   <ItemGroup>
