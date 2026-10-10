@@ -1,6 +1,7 @@
 namespace Nova.Domain;
 
-public enum AccountType { Debit, Savings, Credit }
+/// <summary>Technical — внутренние счета банка (корсчёт и т.п.), через них идут внешние поступления и списания.</summary>
+public enum AccountType { Debit, Savings, Credit, Technical }
 
 public enum AccountStatus { Active, Frozen, Closed }
 

@@ -1,0 +1,683 @@
+
+═══ 0. Объём данных ═══
+ clients | accounts | cards  | transfers | ledger_entries | db_size 
+---------+----------+--------+-----------+----------------+---------
+  200001 |   349765 | 249992 |   2500000 |        5000000 | 2166 MB
+(1 row)
+
+
+═══ 1. Выписка: последние 50 операций счёта (С ИНДЕКСОМ) ═══
+                                                                             QUERY PLAN                                                                              
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit (actual time=0.192..0.224 rows=23 loops=1)
+   Buffers: shared hit=67 read=73
+   ->  Merge Append (actual time=0.191..0.221 rows=23 loops=1)
+         Sort Key: ledger_entries.created_at DESC
+         Buffers: shared hit=67 read=73
+         ->  Index Scan using ledger_entries_2024_01_account_id_created_at_idx on ledger_entries_2024_01 ledger_entries_1 (actual time=0.002..0.002 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_02_account_id_created_at_idx on ledger_entries_2024_02 ledger_entries_2 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_03_account_id_created_at_idx on ledger_entries_2024_03 ledger_entries_3 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_04_account_id_created_at_idx on ledger_entries_2024_04 ledger_entries_4 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_05_account_id_created_at_idx on ledger_entries_2024_05 ledger_entries_5 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_06_account_id_created_at_idx on ledger_entries_2024_06 ledger_entries_6 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_07_account_id_created_at_idx on ledger_entries_2024_07 ledger_entries_7 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_08_account_id_created_at_idx on ledger_entries_2024_08 ledger_entries_8 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_09_account_id_created_at_idx on ledger_entries_2024_09 ledger_entries_9 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_10_account_id_created_at_idx on ledger_entries_2024_10 ledger_entries_10 (actual time=0.002..0.002 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_11_account_id_created_at_idx on ledger_entries_2024_11 ledger_entries_11 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_12_account_id_created_at_idx on ledger_entries_2024_12 ledger_entries_12 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2025_01_account_id_created_at_idx on ledger_entries_2025_01 ledger_entries_13 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2025_02_account_id_created_at_idx on ledger_entries_2025_02 ledger_entries_14 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2025_03_account_id_created_at_idx on ledger_entries_2025_03 ledger_entries_15 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2025_04_account_id_created_at_idx on ledger_entries_2025_04 ledger_entries_16 (actual time=0.009..0.009 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=3
+         ->  Index Scan using ledger_entries_2025_05_account_id_created_at_idx on ledger_entries_2025_05 ledger_entries_17 (actual time=0.007..0.007 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=3
+         ->  Index Scan using ledger_entries_2025_06_account_id_created_at_idx on ledger_entries_2025_06 ledger_entries_18 (actual time=0.007..0.007 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=3
+         ->  Index Scan using ledger_entries_2025_07_account_id_created_at_idx on ledger_entries_2025_07 ledger_entries_19 (actual time=0.010..0.015 rows=3 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=6
+         ->  Index Scan using ledger_entries_2025_08_account_id_created_at_idx on ledger_entries_2025_08 ledger_entries_20 (actual time=0.007..0.008 rows=2 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2 read=3
+         ->  Index Scan using ledger_entries_2025_09_account_id_created_at_idx on ledger_entries_2025_09 ledger_entries_21 (actual time=0.010..0.010 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=4
+         ->  Index Scan using ledger_entries_2025_10_account_id_created_at_idx on ledger_entries_2025_10 ledger_entries_22 (actual time=0.009..0.009 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=4
+         ->  Index Scan using ledger_entries_2025_11_account_id_created_at_idx on ledger_entries_2025_11 ledger_entries_23 (actual time=0.010..0.010 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=4
+         ->  Index Scan using ledger_entries_2025_12_account_id_created_at_idx on ledger_entries_2025_12 ledger_entries_24 (actual time=0.008..0.008 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=1 read=3
+         ->  Index Scan using ledger_entries_2026_01_account_id_created_at_idx on ledger_entries_2026_01 ledger_entries_25 (actual time=0.009..0.009 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=4
+         ->  Index Scan using ledger_entries_2026_02_account_id_created_at_idx on ledger_entries_2026_02 ledger_entries_26 (actual time=0.007..0.007 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=3
+         ->  Index Scan using ledger_entries_2026_03_account_id_created_at_idx on ledger_entries_2026_03 ledger_entries_27 (actual time=0.009..0.009 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=3
+         ->  Index Scan using ledger_entries_2026_04_account_id_created_at_idx on ledger_entries_2026_04 ledger_entries_28 (actual time=0.007..0.007 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=3
+         ->  Index Scan using ledger_entries_2026_05_account_id_created_at_idx on ledger_entries_2026_05 ledger_entries_29 (actual time=0.007..0.007 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=3
+         ->  Index Scan using ledger_entries_2026_06_account_id_created_at_idx on ledger_entries_2026_06 ledger_entries_30 (actual time=0.008..0.009 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=4
+         ->  Index Scan using ledger_entries_2026_07_account_id_created_at_idx on ledger_entries_2026_07 ledger_entries_31 (actual time=0.007..0.007 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=3
+         ->  Index Scan using ledger_entries_2026_08_account_id_created_at_idx on ledger_entries_2026_08 ledger_entries_32 (actual time=0.009..0.019 rows=6 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=9
+         ->  Index Scan using ledger_entries_2026_09_account_id_created_at_idx on ledger_entries_2026_09 ledger_entries_33 (actual time=0.007..0.010 rows=4 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=4 read=3
+         ->  Index Scan using ledger_entries_2026_10_account_id_created_at_idx on ledger_entries_2026_10 ledger_entries_34 (actual time=0.015..0.017 rows=2 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared read=5
+         ->  Index Scan using ledger_entries_2026_11_account_id_created_at_idx on ledger_entries_2026_11 ledger_entries_35 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2026_12_account_id_created_at_idx on ledger_entries_2026_12 ledger_entries_36 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_01_account_id_created_at_idx on ledger_entries_2027_01 ledger_entries_37 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_02_account_id_created_at_idx on ledger_entries_2027_02 ledger_entries_38 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_03_account_id_created_at_idx on ledger_entries_2027_03 ledger_entries_39 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_04_account_id_created_at_idx on ledger_entries_2027_04 ledger_entries_40 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_05_account_id_created_at_idx on ledger_entries_2027_05 ledger_entries_41 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_06_account_id_created_at_idx on ledger_entries_2027_06 ledger_entries_42 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_07_account_id_created_at_idx on ledger_entries_2027_07 ledger_entries_43 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_08_account_id_created_at_idx on ledger_entries_2027_08 ledger_entries_44 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_09_account_id_created_at_idx on ledger_entries_2027_09 ledger_entries_45 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_10_account_id_created_at_idx on ledger_entries_2027_10 ledger_entries_46 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_11_account_id_created_at_idx on ledger_entries_2027_11 ledger_entries_47 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_12_account_id_created_at_idx on ledger_entries_2027_12 ledger_entries_48 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_default_account_id_created_at_idx on ledger_entries_default ledger_entries_49 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=315 read=131
+ Planning Time: 1.062 ms
+ Execution Time: 0.304 ms
+(156 rows)
+
+                                                                             QUERY PLAN                                                                              
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit (actual time=0.059..0.073 rows=23 loops=1)
+   Buffers: shared hit=140
+   ->  Merge Append (actual time=0.058..0.071 rows=23 loops=1)
+         Sort Key: ledger_entries.created_at DESC
+         Buffers: shared hit=140
+         ->  Index Scan using ledger_entries_2024_01_account_id_created_at_idx on ledger_entries_2024_01 ledger_entries_1 (actual time=0.002..0.002 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_02_account_id_created_at_idx on ledger_entries_2024_02 ledger_entries_2 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_03_account_id_created_at_idx on ledger_entries_2024_03 ledger_entries_3 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_04_account_id_created_at_idx on ledger_entries_2024_04 ledger_entries_4 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_05_account_id_created_at_idx on ledger_entries_2024_05 ledger_entries_5 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_06_account_id_created_at_idx on ledger_entries_2024_06 ledger_entries_6 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_07_account_id_created_at_idx on ledger_entries_2024_07 ledger_entries_7 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_08_account_id_created_at_idx on ledger_entries_2024_08 ledger_entries_8 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_09_account_id_created_at_idx on ledger_entries_2024_09 ledger_entries_9 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_10_account_id_created_at_idx on ledger_entries_2024_10 ledger_entries_10 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_11_account_id_created_at_idx on ledger_entries_2024_11 ledger_entries_11 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2024_12_account_id_created_at_idx on ledger_entries_2024_12 ledger_entries_12 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2025_01_account_id_created_at_idx on ledger_entries_2025_01 ledger_entries_13 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2025_02_account_id_created_at_idx on ledger_entries_2025_02 ledger_entries_14 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2025_03_account_id_created_at_idx on ledger_entries_2025_03 ledger_entries_15 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2025_04_account_id_created_at_idx on ledger_entries_2025_04 ledger_entries_16 (actual time=0.003..0.003 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=3
+         ->  Index Scan using ledger_entries_2025_05_account_id_created_at_idx on ledger_entries_2025_05 ledger_entries_17 (actual time=0.002..0.002 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=3
+         ->  Index Scan using ledger_entries_2025_06_account_id_created_at_idx on ledger_entries_2025_06 ledger_entries_18 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=3
+         ->  Index Scan using ledger_entries_2025_07_account_id_created_at_idx on ledger_entries_2025_07 ledger_entries_19 (actual time=0.003..0.004 rows=3 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=6
+         ->  Index Scan using ledger_entries_2025_08_account_id_created_at_idx on ledger_entries_2025_08 ledger_entries_20 (actual time=0.003..0.004 rows=2 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=5
+         ->  Index Scan using ledger_entries_2025_09_account_id_created_at_idx on ledger_entries_2025_09 ledger_entries_21 (actual time=0.002..0.002 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=4
+         ->  Index Scan using ledger_entries_2025_10_account_id_created_at_idx on ledger_entries_2025_10 ledger_entries_22 (actual time=0.002..0.002 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=4
+         ->  Index Scan using ledger_entries_2025_11_account_id_created_at_idx on ledger_entries_2025_11 ledger_entries_23 (actual time=0.003..0.003 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=4
+         ->  Index Scan using ledger_entries_2025_12_account_id_created_at_idx on ledger_entries_2025_12 ledger_entries_24 (actual time=0.002..0.002 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=4
+         ->  Index Scan using ledger_entries_2026_01_account_id_created_at_idx on ledger_entries_2026_01 ledger_entries_25 (actual time=0.002..0.002 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=4
+         ->  Index Scan using ledger_entries_2026_02_account_id_created_at_idx on ledger_entries_2026_02 ledger_entries_26 (actual time=0.002..0.002 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=3
+         ->  Index Scan using ledger_entries_2026_03_account_id_created_at_idx on ledger_entries_2026_03 ledger_entries_27 (actual time=0.002..0.002 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=3
+         ->  Index Scan using ledger_entries_2026_04_account_id_created_at_idx on ledger_entries_2026_04 ledger_entries_28 (actual time=0.003..0.003 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=3
+         ->  Index Scan using ledger_entries_2026_05_account_id_created_at_idx on ledger_entries_2026_05 ledger_entries_29 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=3
+         ->  Index Scan using ledger_entries_2026_06_account_id_created_at_idx on ledger_entries_2026_06 ledger_entries_30 (actual time=0.002..0.002 rows=1 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=4
+         ->  Index Scan using ledger_entries_2026_07_account_id_created_at_idx on ledger_entries_2026_07 ledger_entries_31 (actual time=0.002..0.002 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=3
+         ->  Index Scan using ledger_entries_2026_08_account_id_created_at_idx on ledger_entries_2026_08 ledger_entries_32 (actual time=0.002..0.004 rows=6 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=9
+         ->  Index Scan using ledger_entries_2026_09_account_id_created_at_idx on ledger_entries_2026_09 ledger_entries_33 (actual time=0.002..0.005 rows=4 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=7
+         ->  Index Scan using ledger_entries_2026_10_account_id_created_at_idx on ledger_entries_2026_10 ledger_entries_34 (actual time=0.002..0.003 rows=2 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=5
+         ->  Index Scan using ledger_entries_2026_11_account_id_created_at_idx on ledger_entries_2026_11 ledger_entries_35 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2026_12_account_id_created_at_idx on ledger_entries_2026_12 ledger_entries_36 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_01_account_id_created_at_idx on ledger_entries_2027_01 ledger_entries_37 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_02_account_id_created_at_idx on ledger_entries_2027_02 ledger_entries_38 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_03_account_id_created_at_idx on ledger_entries_2027_03 ledger_entries_39 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_04_account_id_created_at_idx on ledger_entries_2027_04 ledger_entries_40 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_05_account_id_created_at_idx on ledger_entries_2027_05 ledger_entries_41 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_06_account_id_created_at_idx on ledger_entries_2027_06 ledger_entries_42 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_07_account_id_created_at_idx on ledger_entries_2027_07 ledger_entries_43 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_08_account_id_created_at_idx on ledger_entries_2027_08 ledger_entries_44 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_09_account_id_created_at_idx on ledger_entries_2027_09 ledger_entries_45 (actual time=0.000..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_10_account_id_created_at_idx on ledger_entries_2027_10 ledger_entries_46 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_11_account_id_created_at_idx on ledger_entries_2027_11 ledger_entries_47 (actual time=0.000..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_2027_12_account_id_created_at_idx on ledger_entries_2027_12 ledger_entries_48 (actual time=0.001..0.001 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+         ->  Index Scan using ledger_entries_default_account_id_created_at_idx on ledger_entries_default ledger_entries_49 (actual time=0.000..0.000 rows=0 loops=1)
+               Index Cond: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+               Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=90
+ Planning Time: 0.619 ms
+ Execution Time: 0.122 ms
+(156 rows)
+
+
+═══ 2. Та же выписка БЕЗ ИНДЕКСА (индекс удаляется внутри транзакции и возвращается ROLLBACK) ═══
+BEGIN
+DROP INDEX
+                                                            QUERY PLAN                                                             
+-----------------------------------------------------------------------------------------------------------------------------------
+ Limit (actual time=87.589..90.417 rows=23 loops=1)
+   Buffers: shared hit=80 read=63434 written=55
+   ->  Gather Merge (actual time=87.588..90.413 rows=23 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=80 read=63434 written=55
+         ->  Sort (actual time=79.838..79.846 rows=8 loops=3)
+               Sort Key: ledger_entries.created_at DESC
+               Sort Method: quicksort  Memory: 25kB
+               Buffers: shared hit=80 read=63434 written=55
+               Worker 0:  Sort Method: quicksort  Memory: 25kB
+               Worker 1:  Sort Method: quicksort  Memory: 25kB
+               ->  Parallel Append (actual time=11.304..79.797 rows=8 loops=3)
+                     Buffers: shared hit=7 read=63433 written=55
+                     ->  Seq Scan on ledger_entries_2024_01 ledger_entries_1 (actual time=0.003..0.004 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_02 ledger_entries_2 (actual time=0.006..0.006 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_03 ledger_entries_3 (actual time=0.003..0.003 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_04 ledger_entries_4 (actual time=0.003..0.003 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_05 ledger_entries_5 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_06 ledger_entries_6 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_07 ledger_entries_7 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_08 ledger_entries_8 (actual time=0.003..0.003 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_09 ledger_entries_9 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_10 ledger_entries_10 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_11 ledger_entries_11 (actual time=0.005..0.005 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2024_12 ledger_entries_12 (actual time=0.004..0.004 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2025_01 ledger_entries_13 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2025_02 ledger_entries_14 (actual time=0.003..0.003 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2025_03 ledger_entries_15 (actual time=0.003..0.003 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2026_11 ledger_entries_35 (actual time=0.004..0.004 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2026_12 ledger_entries_36 (actual time=0.004..0.004 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_01 ledger_entries_37 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_02 ledger_entries_38 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_03 ledger_entries_39 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_04 ledger_entries_40 (actual time=0.003..0.003 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_05 ledger_entries_41 (actual time=0.003..0.003 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_06 ledger_entries_42 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_07 ledger_entries_43 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_08 ledger_entries_44 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_09 ledger_entries_45 (actual time=0.003..0.003 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_10 ledger_entries_46 (actual time=0.003..0.003 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_11 ledger_entries_47 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_2027_12 ledger_entries_48 (actual time=0.002..0.002 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Seq Scan on ledger_entries_default ledger_entries_49 (actual time=0.003..0.003 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                     ->  Parallel Seq Scan on ledger_entries_2025_10 ledger_entries_22 (actual time=11.953..16.057 rows=1 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 282845
+                           Buffers: shared hit=1 read=3615
+                     ->  Parallel Seq Scan on ledger_entries_2026_05 ledger_entries_29 (actual time=15.829..15.830 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 282846
+                           Buffers: shared read=3612
+                     ->  Parallel Seq Scan on ledger_entries_2026_08 ledger_entries_32 (actual time=5.359..14.807 rows=6 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 282840
+                           Buffers: shared hit=3 read=3609
+                     ->  Parallel Seq Scan on ledger_entries_2026_07 ledger_entries_31 (actual time=15.606..15.606 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 282846
+                           Buffers: shared read=3604
+                     ->  Parallel Seq Scan on ledger_entries_2025_07 ledger_entries_19 (actual time=0.585..13.939 rows=3 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 282843
+                           Buffers: shared read=3588
+                     ->  Parallel Seq Scan on ledger_entries_2026_03 ledger_entries_27 (actual time=14.303..14.303 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 282848
+                           Buffers: shared read=3580
+                     ->  Parallel Seq Scan on ledger_entries_2025_05 ledger_entries_17 (actual time=15.611..15.611 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 282846
+                           Buffers: shared read=3580 written=15
+                     ->  Parallel Seq Scan on ledger_entries_2026_01 ledger_entries_25 (actual time=4.172..15.510 rows=1 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 282845
+                           Buffers: shared read=3568 written=14
+                     ->  Parallel Seq Scan on ledger_entries_2025_12 ledger_entries_24 (actual time=9.589..12.747 rows=1 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 282847
+                           Buffers: shared read=3564
+                     ->  Parallel Seq Scan on ledger_entries_2025_08 ledger_entries_20 (actual time=2.254..12.563 rows=2 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 282844
+                           Buffers: shared read=3564
+                     ->  Parallel Seq Scan on ledger_entries_2026_09 ledger_entries_33 (actual time=2.059..3.999 rows=1 loops=3)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 91240
+                           Buffers: shared read=3500
+                     ->  Parallel Seq Scan on ledger_entries_2026_04 ledger_entries_28 (actual time=13.119..13.119 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 273722
+                           Buffers: shared read=3488 written=25
+                     ->  Parallel Seq Scan on ledger_entries_2025_06 ledger_entries_18 (actual time=11.401..11.401 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 273724
+                           Buffers: shared read=3480 written=1
+                     ->  Parallel Seq Scan on ledger_entries_2026_06 ledger_entries_30 (actual time=0.388..11.099 rows=1 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 273723
+                           Buffers: shared read=3464
+                     ->  Parallel Seq Scan on ledger_entries_2025_11 ledger_entries_23 (actual time=6.919..11.202 rows=1 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 273721
+                           Buffers: shared read=3464
+                     ->  Parallel Seq Scan on ledger_entries_2025_09 ledger_entries_21 (actual time=9.977..11.234 rows=1 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 273723
+                           Buffers: shared hit=1 read=3439
+                     ->  Parallel Seq Scan on ledger_entries_2026_02 ledger_entries_26 (actual time=11.126..11.126 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 255474
+                           Buffers: shared read=3256
+                     ->  Parallel Seq Scan on ledger_entries_2025_04 ledger_entries_16 (actual time=7.495..7.495 rows=0 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 187008
+                           Buffers: shared read=2348
+                     ->  Parallel Seq Scan on ledger_entries_2026_10 ledger_entries_34 (actual time=0.682..3.607 rows=2 loops=1)
+                           Filter: (account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid)
+                           Rows Removed by Filter: 86712
+                           Buffers: shared hit=2 read=1110
+ Planning:
+   Buffers: shared hit=854 read=18
+ Planning Time: 1.128 ms
+ Execution Time: 90.466 ms
+(154 rows)
+
+ROLLBACK
+
+═══ 3. Обороты счёта за прошлый месяц: работает отсечение партиций (partition pruning) ═══
+    В плане должна быть ОДНА партиция ledger_entries_ГГГГ_ММ, остальные не читаются.
+                                                                                                                 QUERY PLAN                                                                                                                 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate (actual time=0.041..0.042 rows=2 loops=1)
+   Group Key: ledger_entries.direction
+   Buffers: shared hit=4 read=6
+   ->  Sort (actual time=0.036..0.036 rows=4 loops=1)
+         Sort Key: ledger_entries.direction
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=4 read=6
+         ->  Bitmap Heap Scan on ledger_entries_2026_09 ledger_entries (actual time=0.013..0.017 rows=4 loops=1)
+               Recheck Cond: ((account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid) AND (created_at >= '2026-09-01 00:00:00+00'::timestamp with time zone) AND (created_at < '2026-10-01 00:00:00+00'::timestamp with time zone))
+               Heap Blocks: exact=4
+               Buffers: shared hit=4 read=3
+               ->  Bitmap Index Scan on ledger_entries_2026_09_account_id_created_at_idx (actual time=0.009..0.009 rows=4 loops=1)
+                     Index Cond: ((account_id = '018f1e3f-f4c1-7f5c-ab1d-4d9c0bb454a1'::uuid) AND (created_at >= '2026-09-01 00:00:00+00'::timestamp with time zone) AND (created_at < '2026-10-01 00:00:00+00'::timestamp with time zone))
+                     Buffers: shared read=3
+ Planning:
+   Buffers: shared hit=54 read=36 dirtied=6
+ Planning Time: 0.310 ms
+ Execution Time: 0.056 ms
+(18 rows)
+
+
+═══ 4. Оборот всего банка за прошлый месяц (одна партиция целиком) ═══
+                                                                               QUERY PLAN                                                                               
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate (actual time=18.735..20.410 rows=1 loops=1)
+   Buffers: shared hit=3500
+   ->  Gather (actual time=18.681..20.402 rows=3 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=3500
+         ->  Partial Aggregate (actual time=11.813..11.813 rows=1 loops=3)
+               Buffers: shared hit=3500
+               ->  Parallel Seq Scan on ledger_entries_2026_09 ledger_entries (actual time=0.006..6.672 rows=91241 loops=3)
+                     Filter: ((created_at >= '2026-09-01 00:00:00+00'::timestamp with time zone) AND (created_at < '2026-10-01 00:00:00+00'::timestamp with time zone))
+                     Buffers: shared hit=3500
+ Planning Time: 0.086 ms
+ Execution Time: 20.423 ms
+(13 rows)
+
+
+═══ 5. Тот же оборот без фильтра по дате (для сравнения: читаются ВСЕ партиции) ═══
+                                                               QUERY PLAN                                                               
+----------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate (actual time=304.530..307.279 rows=1 loops=1)
+   Buffers: shared read=63440 written=38
+   ->  Gather (actual time=304.346..307.259 rows=3 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared read=63440 written=38
+         ->  Partial Aggregate (actual time=295.427..295.434 rows=1 loops=3)
+               Buffers: shared read=63440 written=38
+               ->  Parallel Append (actual time=18.129..207.419 rows=1666667 loops=3)
+                     Buffers: shared read=63440 written=38
+                     ->  Seq Scan on ledger_entries_2024_01 ledger_entries_1 (actual time=0.005..0.006 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_02 ledger_entries_2 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_03 ledger_entries_3 (actual time=0.003..0.003 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_04 ledger_entries_4 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_05 ledger_entries_5 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_06 ledger_entries_6 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_07 ledger_entries_7 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_08 ledger_entries_8 (actual time=0.003..0.003 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_09 ledger_entries_9 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_10 ledger_entries_10 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_11 ledger_entries_11 (actual time=0.003..0.003 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2024_12 ledger_entries_12 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2025_01 ledger_entries_13 (actual time=0.003..0.003 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2025_02 ledger_entries_14 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2025_03 ledger_entries_15 (actual time=0.002..0.003 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2026_11 ledger_entries_35 (actual time=0.003..0.003 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2026_12 ledger_entries_36 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_01 ledger_entries_37 (actual time=0.001..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_02 ledger_entries_38 (actual time=0.003..0.004 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_03 ledger_entries_39 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_04 ledger_entries_40 (actual time=0.003..0.003 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_05 ledger_entries_41 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_06 ledger_entries_42 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_07 ledger_entries_43 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_08 ledger_entries_44 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_09 ledger_entries_45 (actual time=0.003..0.003 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_10 ledger_entries_46 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_11 ledger_entries_47 (actual time=0.001..0.001 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_2027_12 ledger_entries_48 (actual time=0.004..0.004 rows=0 loops=1)
+                     ->  Seq Scan on ledger_entries_default ledger_entries_49 (actual time=0.002..0.002 rows=0 loops=1)
+                     ->  Parallel Seq Scan on ledger_entries_2025_10 ledger_entries_22 (actual time=17.913..40.034 rows=282846 loops=1)
+                           Buffers: shared read=3616
+                     ->  Parallel Seq Scan on ledger_entries_2026_05 ledger_entries_29 (actual time=17.999..40.671 rows=282846 loops=1)
+                           Buffers: shared read=3612
+                     ->  Parallel Seq Scan on ledger_entries_2026_08 ledger_entries_32 (actual time=0.057..20.700 rows=282846 loops=1)
+                           Buffers: shared read=3612
+                     ->  Parallel Seq Scan on ledger_entries_2026_07 ledger_entries_31 (actual time=0.041..21.176 rows=282846 loops=1)
+                           Buffers: shared read=3604
+                     ->  Parallel Seq Scan on ledger_entries_2025_07 ledger_entries_19 (actual time=0.036..20.356 rows=282846 loops=1)
+                           Buffers: shared read=3588
+                     ->  Parallel Seq Scan on ledger_entries_2026_03 ledger_entries_27 (actual time=0.029..20.187 rows=282848 loops=1)
+                           Buffers: shared read=3580
+                     ->  Parallel Seq Scan on ledger_entries_2025_05 ledger_entries_17 (actual time=0.045..20.096 rows=282846 loops=1)
+                           Buffers: shared read=3580
+                     ->  Parallel Seq Scan on ledger_entries_2026_01 ledger_entries_25 (actual time=0.033..20.042 rows=282846 loops=1)
+                           Buffers: shared read=3568 written=1
+                     ->  Parallel Seq Scan on ledger_entries_2025_12 ledger_entries_24 (actual time=0.043..18.608 rows=282848 loops=1)
+                           Buffers: shared read=3564 written=13
+                     ->  Parallel Seq Scan on ledger_entries_2025_08 ledger_entries_20 (actual time=0.051..18.503 rows=282846 loops=1)
+                           Buffers: shared read=3564 written=9
+                     ->  Parallel Seq Scan on ledger_entries_2026_09 ledger_entries_33 (actual time=0.036..6.133 rows=91241 loops=3)
+                           Buffers: shared read=3500
+                     ->  Parallel Seq Scan on ledger_entries_2026_04 ledger_entries_28 (actual time=0.028..9.207 rows=136861 loops=2)
+                           Buffers: shared read=3488
+                     ->  Parallel Seq Scan on ledger_entries_2025_06 ledger_entries_18 (actual time=0.023..17.000 rows=273724 loops=1)
+                           Buffers: shared read=3480
+                     ->  Parallel Seq Scan on ledger_entries_2026_06 ledger_entries_30 (actual time=0.037..17.072 rows=273724 loops=1)
+                           Buffers: shared read=3464 written=14
+                     ->  Parallel Seq Scan on ledger_entries_2025_11 ledger_entries_23 (actual time=0.024..17.928 rows=273722 loops=1)
+                           Buffers: shared read=3464
+                     ->  Parallel Seq Scan on ledger_entries_2025_09 ledger_entries_21 (actual time=0.024..16.887 rows=273724 loops=1)
+                           Buffers: shared read=3440
+                     ->  Parallel Seq Scan on ledger_entries_2026_02 ledger_entries_26 (actual time=0.027..16.078 rows=255474 loops=1)
+                           Buffers: shared read=3256 written=1
+                     ->  Parallel Seq Scan on ledger_entries_2025_04 ledger_entries_16 (actual time=0.019..11.894 rows=187008 loops=1)
+                           Buffers: shared read=2348
+                     ->  Parallel Seq Scan on ledger_entries_2026_10 ledger_entries_34 (actual time=18.402..24.579 rows=86714 loops=1)
+                           Buffers: shared read=1112
+ Planning:
+   Buffers: shared hit=1419 read=151 dirtied=31
+ Planning Time: 1.602 ms
+ Execution Time: 308.686 ms
+(82 rows)
+
+
+═══ 6. Поиск клиента по телефону (уникальный индекс) ═══
+                                       QUERY PLAN                                       
+----------------------------------------------------------------------------------------
+ Index Scan using ix_clients_phone on clients (actual time=0.018..0.018 rows=1 loops=1)
+   Index Cond: ((phone)::text = '+79990123456'::text)
+   Buffers: shared read=4
+ Planning:
+   Buffers: shared read=3
+ Planning Time: 0.063 ms
+ Execution Time: 0.025 ms
+(7 rows)
+
+
+═══ 7. Поиск по телефону БЕЗ ИНДЕКСА ═══
+BEGIN
+DROP INDEX
+                                  QUERY PLAN                                  
+------------------------------------------------------------------------------
+ Gather (actual time=8.799..13.215 rows=1 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   Buffers: shared hit=1 read=6465
+   ->  Parallel Seq Scan on clients (actual time=3.912..4.890 rows=0 loops=3)
+         Filter: ((phone)::text = '+79990123456'::text)
+         Rows Removed by Filter: 66667
+         Buffers: shared hit=1 read=6465
+ Planning:
+   Buffers: shared hit=2 read=3
+ Planning Time: 0.037 ms
+ Execution Time: 13.222 ms
+(12 rows)
+
+ROLLBACK
+
+═══ 8. Партиции: строк и размер ═══
+       partition        | rows_estimate | size  
+------------------------+---------------+-------
+ ledger_entries_2025_04 |        187008 | 40 MB
+ ledger_entries_2025_05 |        282846 | 60 MB
+ ledger_entries_2025_06 |        273724 | 58 MB
+ ledger_entries_2025_07 |        282846 | 60 MB
+ ledger_entries_2025_08 |        282846 | 60 MB
+ ledger_entries_2025_09 |        273724 | 58 MB
+ ledger_entries_2025_10 |        282846 | 60 MB
+ ledger_entries_2025_11 |        273722 | 58 MB
+ ledger_entries_2025_12 |        282848 | 60 MB
+ ledger_entries_2026_01 |        282846 | 59 MB
+ ledger_entries_2026_02 |        255474 | 54 MB
+ ledger_entries_2026_03 |        282848 | 60 MB
+ ledger_entries_2026_04 |        273722 | 58 MB
+ ledger_entries_2026_05 |        282846 | 60 MB
+ ledger_entries_2026_06 |        273724 | 58 MB
+ ledger_entries_2026_07 |        282846 | 60 MB
+ ledger_entries_2026_08 |        282846 | 60 MB
+ ledger_entries_2026_09 |        273724 | 58 MB
+ ledger_entries_2026_10 |         86714 | 18 MB
+(19 rows)
+

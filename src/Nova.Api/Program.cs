@@ -54,4 +54,72 @@ system.MapGet("/audit/verify", async (NovaDbContext db, CancellationToken ct) =>
     return new { Total = entries.Count, Intact = broken is null, FirstBrokenId = broken };
 });
 
+// Сверка: баланс каждого счёта = сумма его проводок, сумма дебетов = сумма кредитов.
+// TODO (неделя 3): закрыть правом reports.read.
+system.MapGet("/reconcile", async (NovaDbContext db, CancellationToken ct) =>
+{
+    var conn = db.Database.GetDbConnection();
+    await conn.OpenAsync(ct);
+    try
+    {
+        long accounts, mismatched;
+        decimal debits, credits;
+
+        await using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = Sql.ReconcileAccounts;
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            await r.ReadAsync(ct);
+            accounts = r.GetInt64(0);
+            mismatched = r.GetInt64(1);
+        }
+        await using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = Sql.ReconcileLedger;
+            await using var r = await cmd.ExecuteReaderAsync(ct);
+            await r.ReadAsync(ct);
+            debits = r.GetDecimal(0);
+            credits = r.GetDecimal(1);
+        }
+
+        return Results.Ok(new
+        {
+            Ok = mismatched == 0 && debits == credits,
+            Accounts = accounts,
+            MismatchedAccounts = mismatched,
+            TotalDebits = debits,
+            TotalCredits = credits,
+        });
+    }
+    finally
+    {
+        await conn.CloseAsync();
+    }
+});
+
+// Партиции книги проводок: видно, как 5 млн строк разложены по месяцам.
+system.MapGet("/partitions", async (NovaDbContext db, CancellationToken ct) =>
+{
+    var conn = db.Database.GetDbConnection();
+    await conn.OpenAsync(ct);
+    try
+    {
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = Sql.LedgerPartitions;
+        await using var r = await cmd.ExecuteReaderAsync(ct);
+        var list = new List<object>();
+        while (await r.ReadAsync(ct))
+        {
+            var rows = r.GetInt64(1);
+            if (rows == 0) continue; // пустые будущие месяцы не показываем
+            list.Add(new { Name = r.GetString(0), Rows = rows, SizeMb = Math.Round(r.GetInt64(2) / 1048576.0, 1) });
+        }
+        return list;
+    }
+    finally
+    {
+        await conn.CloseAsync();
+    }
+});
+
 app.Run();

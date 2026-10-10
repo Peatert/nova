@@ -129,7 +129,7 @@ internal sealed class AuditLogConfig : IEntityTypeConfiguration<AuditLog>
         e.Property(x => x.Id).UseIdentityAlwaysColumn();
         e.Property(x => x.Action).HasMaxLength(64);
         e.Property(x => x.Target).HasMaxLength(128);
-        e.Property(x => x.PayloadJson).HasColumnType("jsonb");
+        // text, а не jsonb: jsonb переформатирует JSON, и хеш записи перестанет сходиться.
         e.Property(x => x.Ip).HasMaxLength(45);
         e.Property(x => x.PrevHash).HasMaxLength(64).IsFixedLength();
         e.Property(x => x.Hash).HasMaxLength(64).IsFixedLength();

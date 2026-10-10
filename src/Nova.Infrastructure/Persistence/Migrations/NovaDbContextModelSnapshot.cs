@@ -137,7 +137,7 @@ namespace Nova.Infrastructure.Persistence.Migrations
                         .HasColumnName("ip");
 
                     b.Property<string>("PayloadJson")
-                        .HasColumnType("jsonb")
+                        .HasColumnType("text")
                         .HasColumnName("payload_json");
 
                     b.Property<string>("PrevHash")

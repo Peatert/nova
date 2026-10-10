@@ -26,11 +26,25 @@ public class AuditLog
     {
         var raw = string.Join('|',
             PrevHash, ActorType, ActorId?.ToString() ?? "", Action, Target ?? "",
-            PayloadJson ?? "", CreatedAt.ToUniversalTime().ToString("O"));
+            PayloadJson ?? "", ToMicroseconds(CreatedAt).ToString("O"));
         return Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(raw)));
     }
 
-    public void Seal() => Hash = ComputeHash();
+    public void Seal()
+    {
+        CreatedAt = ToMicroseconds(CreatedAt);
+        Hash = ComputeHash();
+    }
+
+    /// <summary>
+    /// PostgreSQL хранит время с точностью до микросекунды, .NET — до 100 нс.
+    /// Без обрезки хеш, посчитанный до записи, не совпал бы с хешем после чтения из БД.
+    /// </summary>
+    public static DateTimeOffset ToMicroseconds(DateTimeOffset t)
+    {
+        var utc = t.ToUniversalTime();
+        return utc.AddTicks(-(utc.Ticks % 10));
+    }
 
     /// <summary>Проверяет целостность цепочки. Возвращает Id первой испорченной записи или null.</summary>
     public static long? FindBrokenLink(IEnumerable<AuditLog> orderedById)

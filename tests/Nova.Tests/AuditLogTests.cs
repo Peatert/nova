@@ -39,6 +39,21 @@ public class AuditLogTests
     }
 
     [Fact]
+    public void Hash_survives_database_microsecond_precision()
+    {
+        // .NET хранит время до 100 нс, PostgreSQL — до 1 мкс. После чтения из БД хеш должен совпасть.
+        var e = new AuditLog
+        {
+            ActorType = ActorType.System, Action = "system.seed", PrevHash = AuditLog.GenesisHash,
+            CreatedAt = new DateTimeOffset(2026, 10, 10, 12, 0, 0, TimeSpan.Zero).AddTicks(1_234_567),
+        };
+        e.Seal();
+        var fromDb = e.CreatedAt.AddTicks(-(e.CreatedAt.Ticks % 10)); // как вернёт PostgreSQL
+        e.CreatedAt = fromDb;
+        Assert.Equal(e.Hash, e.ComputeHash());
+    }
+
+    [Fact]
     public void Deleted_record_is_detected()
     {
         var chain = BuildChain(10);
