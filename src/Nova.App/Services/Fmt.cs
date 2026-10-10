@@ -7,7 +7,9 @@ public static class Fmt
 {
     public static readonly CultureInfo Ru = new("ru-RU");
 
-    public static string Money(decimal value) => value.ToString("N2", Ru) + " ₽";
+    /// <summary>Знак минуса — типографский «−» (U+2212), а не дефис: одинаково во всём приложении.</summary>
+    public static string Money(decimal value) =>
+        (value < 0 ? "−" : "") + Math.Abs(value).ToString("N2", Ru) + " ₽";
 
     public static string SignedMoney(decimal value) =>
         (value > 0 ? "+" : value < 0 ? "−" : "") + Money(Math.Abs(value));

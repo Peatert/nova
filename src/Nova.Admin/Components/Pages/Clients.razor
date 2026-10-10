@@ -1,0 +1,87 @@
+@page "/clients"
+@attribute [Authorize(Policy = Permissions.ClientsRead)]
+@using Nova.Domain.Clients
+@inject NovaDbContext Db
+
+<PageTitle>Nova — клиенты</PageTitle>
+
+<header class="page-head">
+    <div>
+        <h1>Клиенты</h1>
+        <p class="muted">Поиск по телефону или ФИО. Телефоны маскируются: полный номер видят только роли с правом на персональные данные.</p>
+    </div>
+</header>
+
+<form method="get" class="search card">
+    <input name="q" value="@Q" placeholder="+7 999 000-00-00 или фамилия" autofocus />
+    <button type="submit">Найти</button>
+</form>
+
+@if (Q is { Length: > 0 })
+{
+    <section class="card">
+        @if (rows.Count == 0)
+        {
+            <p class="muted">Ничего не найдено.</p>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr><th>ФИО</th><th>Телефон</th><th class="num">Счетов</th><th class="num">Собственные средства</th><th>Статус</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in rows)
+                    {
+                        <tr>
+                            <td>@c.FullName</td>
+                            <td class="mono">@(canSeePersonal ? c.Phone : Fmt.MaskPhone(c.Phone))</td>
+                            <td class="num">@c.Accounts</td>
+                            <td class="num">@Fmt.Money(c.Funds)</td>
+                            <td>@(c.Locked ? "заблокирован (подбор пароля)" : c.Mfa ? "2FA включена" : "активен")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <p class="muted">Показаны первые @Limit совпадений.</p>
+        }
+    </section>
+}
+
+@code {
+    private const int Limit = 25;
+
+    [SupplyParameterFromQuery] private string? Q { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> Auth { get; set; } = default!;
+
+    private sealed record Row(string FullName, string Phone, int Accounts, decimal Funds, bool Locked, bool Mfa);
+    private List<Row> rows = [];
+    private bool canSeePersonal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await Auth).User;
+        canSeePersonal = user.HasClaim("perm", Permissions.ClientsPersonalData);
+
+        var q = Q?.Trim();
+        if (string.IsNullOrEmpty(q)) return;
+
+        var now = DateTimeOffset.UtcNow;
+        var query = Db.Clients.AsNoTracking().Where(c => c.Phone != "+70000000000");
+        query = PhoneNumber.TryNormalize(q, out var phone)
+            ? query.Where(c => c.Phone == phone)
+            : query.Where(c => EF.Functions.ILike(c.FullName, "%" + q + "%"));
+
+        rows = await query
+            .OrderBy(c => c.FullName)
+            .Take(Limit)
+            .Select(c => new Row(
+                c.FullName,
+                c.Phone,
+                c.Accounts.Count,
+                c.Accounts.Where(a => a.Type == AccountType.Debit || a.Type == AccountType.Savings).Sum(a => a.Balance),
+                c.LockedUntil != null && c.LockedUntil > now,
+                c.TotpEnabled))
+            .ToListAsync();
+    }
+}

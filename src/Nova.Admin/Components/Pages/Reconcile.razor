@@ -1,0 +1,64 @@
+@page "/reconcile"
+@attribute [Authorize(Policy = Permissions.ReportsRead)]
+@using System.Diagnostics
+@inject NovaDbContext Db
+
+<PageTitle>Nova — сверка</PageTitle>
+
+<header class="page-head">
+    <div>
+        <h1>Сверка книги проводок</h1>
+        <p class="muted">Пересчёт по всем 5 млн проводок занимает несколько секунд. Выполнено за @elapsed.TotalSeconds.ToString("0.0") с · <a href="/reconcile">повторить</a></p>
+    </div>
+</header>
+
+<section class="kpis">
+    <div class="card kpi @(mismatched == 0 ? "ok" : "bad")">
+        <div class="kpi-label">Баланс = сумма проводок</div>
+        <div class="kpi-value">@(mismatched == 0 ? "✓ сходится" : "✗ расхождение")</div>
+        <div class="kpi-note">счетов проверено: @Fmt.Num(accountsChecked), с расхождением: @Fmt.Num(mismatched)</div>
+    </div>
+    <div class="card kpi @(debits == credits ? "ok" : "bad")">
+        <div class="kpi-label">Дебет = кредит</div>
+        <div class="kpi-value">@(debits == credits ? "✓ сходится" : "✗ расхождение")</div>
+        <div class="kpi-note">@Fmt.Money(debits)</div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Партиции ledger_entries</h2>
+    <table>
+        <thead><tr><th>Партиция</th><th class="num">Строк (оценка)</th><th class="num">Размер</th></tr></thead>
+        <tbody>
+            @foreach (var p in partitions)
+            {
+                <tr><td class="mono">@p.Name</td><td class="num">@Fmt.Num(p.Rows)</td><td class="num">@p.SizeMb.ToString("0.0") МБ</td></tr>
+            }
+        </tbody>
+    </table>
+</section>
+
+@code {
+    private long accountsChecked, mismatched;
+    private decimal debits, credits;
+    private TimeSpan elapsed;
+    private List<(string Name, long Rows, double SizeMb)> partitions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var sw = Stopwatch.StartNew();
+
+        var acc = await RawSql.QueryAsync(Db, Sql.ReconcileAccounts, r => (r.GetInt64(0), r.GetInt64(1)));
+        (accountsChecked, mismatched) = acc[0];
+
+        var led = await RawSql.QueryAsync(Db, Sql.ReconcileLedger, r => (r.GetDecimal(0), r.GetDecimal(1)));
+        (debits, credits) = led[0];
+
+        partitions = (await RawSql.QueryAsync(Db, Sql.LedgerPartitions,
+                r => (r.GetString(0), r.GetInt64(1), r.GetInt64(2) / 1048576.0)))
+            .Where(p => p.Item2 > 0)
+            .ToList();
+
+        elapsed = sw.Elapsed;
+    }
+}

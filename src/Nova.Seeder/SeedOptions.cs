@@ -7,6 +7,7 @@ public sealed record SeedOptions
     public int Months { get; init; } = 18;
     public int Seed { get; init; } = 42;
     public bool Reset { get; init; }
+    public bool Demo { get; init; }
     public string ConnectionString { get; init; } =
         Environment.GetEnvironmentVariable("NOVA_DB")
         ?? "Host=localhost;Port=5432;Database=nova;Username=nova;Password=nova_dev_password;Timeout=60;Command Timeout=0";
@@ -27,6 +28,7 @@ public sealed record SeedOptions
                 "--months" => o with { Months = int.Parse(Next()) },
                 "--seed" => o with { Seed = int.Parse(Next()) },
                 "--reset" => o with { Reset = true },
+                "--demo" => o with { Demo = true },
                 "--connection" => o with { ConnectionString = Next() },
                 "--help" or "-h" => throw new HelpRequested(),
                 _ => throw new ArgumentException($"Неизвестный параметр: {args[i]}"),
@@ -45,6 +47,7 @@ public sealed record SeedOptions
           --months N      за сколько месяцев истории (по умолчанию 18)
           --seed N        зерно генератора, одинаковое зерно = одинаковые данные (42)
           --reset         очистить все данные перед генерацией (роли сохраняются)
+          --demo          только добавить демо-клиенту +79990000000 насыщенную историю за 90 дней
           --connection S  строка подключения (или переменная окружения NOVA_DB)
 
         Пример быстрой проверки: dotnet run --project src/Nova.Seeder -c Release -- --clients 2000 --transfers 20000 --reset

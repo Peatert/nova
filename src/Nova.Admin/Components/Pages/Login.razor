@@ -1,0 +1,126 @@
+@page "/login"
+@layout EmptyLayout
+@attribute [AllowAnonymous]
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Nova.Domain.Entities
+@using Nova.Infrastructure.Audit
+@using Nova.Infrastructure.Security
+@inject NovaDbContext Db
+@inject AuditWriter Audit
+@inject FieldEncryptor Enc
+@inject TimeProvider Time
+@inject NavigationManager Nav
+
+<PageTitle>Nova — вход в консоль</PageTitle>
+
+<div class="login-wrap">
+    <EditForm Model="Input" FormName="login" OnValidSubmit="SignInAsync" method="post" class="login card">
+        <div class="brand big">NOVA</div>
+        <div class="brand-sub">Консоль управления банком</div>
+
+        <label for="login">Логин</label>
+        <InputText id="login" @bind-Value="Input.Login" autocomplete="username" />
+
+        <label for="password">Пароль</label>
+        <InputText id="password" type="password" @bind-Value="Input.Password" autocomplete="current-password" />
+
+        <label for="code">Код из приложения-аутентификатора</label>
+        <InputText id="code" @bind-Value="Input.Code" inputmode="numeric" autocomplete="one-time-code" placeholder="000000" />
+
+        @if (error is not null)
+        {
+            <p class="error">@error</p>
+        }
+
+        <button type="submit">Войти</button>
+        <p class="hint">Для владельца код 2FA обязателен. Все входы записываются в аудит-лог.</p>
+    </EditForm>
+</div>
+
+@code {
+    private const string Generic = "Неверный логин, пароль или код";
+    private static readonly Lazy<string> DummyHash = new(() => PasswordHasher.Hash("nova-admin-dummy-0"));
+
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+    [SupplyParameterFromForm] private LoginInput Input { get; set; } = new();
+    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
+
+    private string? error;
+
+    private sealed class LoginInput
+    {
+        public string Login { get; set; } = "";
+        public string Password { get; set; } = "";
+        public string Code { get; set; } = "";
+    }
+
+    private async Task SignInAsync()
+    {
+        var now = Time.GetUtcNow();
+        var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+        var login = Input.Login.Trim().ToLowerInvariant();
+
+        var staff = await Db.StaffMembers.Include(s => s.Role).SingleOrDefaultAsync(s => s.Login == login);
+        if (staff is null || !staff.IsActive || staff.Role is null)
+        {
+            PasswordHasher.Verify(Input.Password, DummyHash.Value); // одинаковое время ответа
+            await Audit.WriteAsync(ActorType.Staff, staff?.Id, "admin.login.failed", login, new { reason = "unknown" }, ip);
+            error = Generic;
+            return;
+        }
+
+        if (staff.IsLocked(now))
+        {
+            error = "Вход временно заблокирован после неудачных попыток. Повторите через 15 минут.";
+            return;
+        }
+
+        // Роль владельца без 2FA в консоль не пускается вообще.
+        if (Roles.RequireMfa.Contains(staff.Role.Code) && !staff.TotpEnabled)
+        {
+            error = "Для этой роли сначала включите 2FA (через API: /api/me/2fa/setup).";
+            return;
+        }
+
+        var passwordOk = PasswordHasher.Verify(Input.Password, staff.PasswordHash);
+        var codeOk = true;
+        long step = 0;
+        if (staff.TotpEnabled)
+            codeOk = staff.TotpSecretEnc is not null
+                     && Totp.Verify(Enc.Decrypt(staff.TotpSecretEnc), Input.Code, now, staff.TotpLastStep, out step);
+
+        if (!passwordOk || !codeOk)
+        {
+            var lockedNow = staff.RegisterFailure(now);
+            await Audit.WriteAsync(ActorType.Staff, staff.Id, lockedNow ? "admin.locked" : "admin.login.failed", login,
+                new { reason = passwordOk ? "code" : "password" }, ip);
+            error = lockedNow ? "Слишком много попыток. Вход заблокирован на 15 минут." : Generic;
+            return;
+        }
+
+        staff.RegisterSuccess();
+        if (staff.TotpEnabled) staff.TotpLastStep = step;
+        await Audit.WriteAsync(ActorType.Staff, staff.Id, "admin.login.success", login, new { mfa = staff.TotpEnabled }, ip);
+
+        var claims = new List<Claim>
+        {
+            new("sub", staff.Id.ToString()),
+            new(ClaimTypes.Name, staff.FullName),
+            new("role", staff.Role.Code),
+            new("role_name", staff.Role.Name),
+            new("amr", staff.TotpEnabled ? "mfa" : "pwd"),
+        };
+        claims.AddRange(staff.Role.Permissions.Select(p => new Claim("perm", p)));
+
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme)));
+
+        // Только локальные адреса: защита от open redirect через ?ReturnUrl=https://evil
+        // Без ReturnUrl (или с ним = "/") — на первый доступный роли раздел, а не на «Нет доступа».
+        var target = ReturnUrl is { Length: > 1 } r && r.StartsWith('/') && !r.StartsWith("//")
+            ? r
+            : AdminHome.For(staff.Role.Permissions);
+        Nav.NavigateTo(target, forceLoad: true);
+    }
+}

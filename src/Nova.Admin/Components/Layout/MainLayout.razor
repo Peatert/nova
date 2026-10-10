@@ -1,0 +1,43 @@
+@inherits LayoutComponentBase
+
+<div class="stars" aria-hidden="true"></div>
+<div class="shell">
+    <aside class="side">
+        <div class="brand">NOVA</div>
+        <div class="brand-sub">Консоль управления</div>
+
+        <nav>
+            @* Пункт меню виден, только если у роли есть право — та же политика, что на странице *@
+            <AuthorizeView Policy="@Permissions.BankDashboard">
+                <NavLink href="/" Match="NavLinkMatch.All">Обзор</NavLink>
+            </AuthorizeView>
+            <AuthorizeView Policy="@Permissions.ClientsRead">
+                <NavLink href="/clients">Клиенты</NavLink>
+            </AuthorizeView>
+            <AuthorizeView Policy="@Permissions.ReportsRead">
+                <NavLink href="/reconcile">Сверка</NavLink>
+            </AuthorizeView>
+            <AuthorizeView Policy="@Permissions.AuditRead">
+                <NavLink href="/audit">Аудит</NavLink>
+            </AuthorizeView>
+        </nav>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="who">
+                    <div class="who-name">@context.User.Identity?.Name</div>
+                    <div class="who-role">@context.User.FindFirst("role_name")?.Value</div>
+                    <div class="who-mfa">@(context.User.FindFirst("amr")?.Value == "mfa" ? "● вход с 2FA" : "○ вход по паролю")</div>
+                    <form method="post" action="/logout">
+                        <AntiforgeryToken />
+                        <button type="submit" class="ghost">Выйти</button>
+                    </form>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+    </aside>
+
+    <main class="content">
+        @Body
+    </main>
+</div>

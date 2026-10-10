@@ -1,0 +1,14 @@
+@page "/denied"
+@attribute [AllowAnonymous]
+
+<PageTitle>Nova — нет доступа</PageTitle>
+
+<div class="card">
+    <h1>Нет доступа</h1>
+    <p>У вашей роли нет права на этот раздел. Права роли настраиваются в матрице ролей, а не точечно.</p>
+    <AuthorizeView>
+        <Authorized>
+            <p><a href="@AdminHome.For(context.User)">На свою стартовую страницу</a></p>
+        </Authorized>
+    </AuthorizeView>
+</div>

@@ -1,0 +1,98 @@
+@page "/"
+@attribute [Authorize(Policy = Permissions.BankDashboard)]
+@inject NovaDbContext Db
+@inject TimeProvider Clock
+
+<PageTitle>Nova — обзор банка</PageTitle>
+
+<header class="page-head">
+    <div>
+        <h1>Обзор банка</h1>
+        <p class="muted">Данные из базы на @Fmt.Time(Clock.GetUtcNow()) МСК · <a href="/">обновить</a></p>
+    </div>
+</header>
+
+<section class="kpis">
+    <div class="card kpi">
+        <div class="kpi-label">Клиентов</div>
+        <div class="kpi-value">@Fmt.Num(clients)</div>
+        <div class="kpi-note">счетов: @Fmt.Num(accounts)</div>
+    </div>
+    <div class="card kpi">
+        <div class="kpi-label">Средства клиентов</div>
+        <div class="kpi-value">@Fmt.Short(funds)</div>
+        <div class="kpi-note">дебетовые + накопительные</div>
+    </div>
+    <div class="card kpi">
+        <div class="kpi-label">Задолженность по кредиткам</div>
+        <div class="kpi-value">@Fmt.Short(creditDebt)</div>
+        <div class="kpi-note">кредитных счетов в минусе: @Fmt.Num(debtors)</div>
+    </div>
+    <div class="card kpi">
+        <div class="kpi-label">Переводов сегодня</div>
+        <div class="kpi-value">@Fmt.Num(todayCount)</div>
+        <div class="kpi-note">на @Fmt.Short(todayVolume)</div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Переводы за 14 дней</h2>
+    <div class="bars">
+        @foreach (var d in days)
+        {
+            var h = maxCount == 0 ? 0 : (int)Math.Round(100.0 * d.Count / maxCount);
+            <div class="bar-col" title="@d.Day.ToString("dd.MM") — @Fmt.Num(d.Count) переводов на @Fmt.Short(d.Volume)">
+                <div class="bar" style="height:@(h)%"></div>
+                <div class="bar-label">@d.Day.ToString("dd")</div>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="card">
+    <h2>Безопасность</h2>
+    <table>
+        <tr><td>Заблокированных после подбора пароля</td><td class="num">@Fmt.Num(lockedNow)</td></tr>
+        <tr><td>Сотрудников с включённой 2FA</td><td class="num">@staffMfa из @staffTotal</td></tr>
+        <tr><td>Активных сессий (refresh-токенов)</td><td class="num">@Fmt.Num(activeSessions)</td></tr>
+    </table>
+    <p class="muted">Полная сверка книги проводок и проверка цепочки аудита — в разделах «Сверка» и «Аудит».</p>
+</section>
+
+@code {
+    private long clients, accounts, debtors, todayCount, lockedNow, activeSessions;
+    private int staffMfa, staffTotal;
+    private decimal funds, creditDebt, todayVolume;
+    private List<(DateOnly Day, long Count, decimal Volume)> days = [];
+    private long maxCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var now = Clock.GetUtcNow();
+        var msk = now.ToOffset(TimeSpan.FromHours(3));
+        var dayStart = new DateTimeOffset(msk.Date, TimeSpan.FromHours(3)).ToUniversalTime();
+
+        clients = await Db.Clients.LongCountAsync(c => c.Phone != "+70000000000");
+        accounts = await Db.Accounts.LongCountAsync(a => a.Type != AccountType.Technical);
+        funds = await Db.Accounts
+            .Where(a => a.Type == AccountType.Debit || a.Type == AccountType.Savings)
+            .SumAsync(a => a.Balance);
+        creditDebt = await Db.Accounts
+            .Where(a => a.Type == AccountType.Credit && a.Balance < 0)
+            .SumAsync(a => -a.Balance);
+        debtors = await Db.Accounts.LongCountAsync(a => a.Type == AccountType.Credit && a.Balance < 0);
+
+        todayCount = await Db.Transfers.LongCountAsync(t => t.CreatedAt >= dayStart);
+        todayVolume = await Db.Transfers.Where(t => t.CreatedAt >= dayStart).SumAsync(t => t.Amount);
+
+        days = await RawSql.QueryAsync(Db, RawSql.TransfersByDay,
+            r => (DateOnly.FromDateTime(r.GetDateTime(0)), r.GetInt64(1), r.GetDecimal(2)));
+        maxCount = days.Count == 0 ? 0 : days.Max(d => d.Count);
+
+        lockedNow = await Db.Clients.LongCountAsync(c => c.LockedUntil > now)
+                    + await Db.StaffMembers.LongCountAsync(s => s.LockedUntil > now);
+        staffTotal = await Db.StaffMembers.CountAsync();
+        staffMfa = await Db.StaffMembers.CountAsync(s => s.TotpEnabled);
+        activeSessions = await Db.RefreshTokens.LongCountAsync(t => t.RevokedAt == null && t.ExpiresAt > now);
+    }
+}

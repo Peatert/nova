@@ -1,0 +1,77 @@
+@page "/audit"
+@attribute [Authorize(Policy = Permissions.AuditRead)]
+@using Nova.Domain.Entities
+@inject NovaDbContext Db
+
+<PageTitle>Nova — аудит</PageTitle>
+
+<header class="page-head">
+    <div>
+        <h1>Аудит-лог</h1>
+        <p class="muted">Каждая запись содержит SHA-256 предыдущей. Правка или удаление любой строки в БД ломает цепочку — это видно ниже.</p>
+    </div>
+</header>
+
+<section class="kpis">
+    <div class="card kpi @(broken is null ? "ok" : "bad")">
+        <div class="kpi-label">Целостность цепочки</div>
+        <div class="kpi-value">@(broken is null ? "✓ не нарушена" : "✗ нарушена")</div>
+        <div class="kpi-note">
+            @if (broken is null) { <span>проверено записей: @Fmt.Num(total)</span> }
+            else { <span>первая испорченная запись: #@broken</span> }
+        </div>
+    </div>
+</section>
+
+<form method="get" class="search card">
+    <input name="action" value="@ActionFilter" placeholder="Фильтр по действию: auth.locked, admin.login…" />
+    <button type="submit">Показать</button>
+</form>
+
+<section class="card">
+    <table>
+        <thead>
+            <tr><th>#</th><th>Время (МСК)</th><th>Кто</th><th>Действие</th><th>Объект</th><th>Детали</th><th>IP</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var e in recent)
+            {
+                <tr>
+                    <td class="mono">@e.Id</td>
+                    <td class="mono">@Fmt.Time(e.CreatedAt)</td>
+                    <td>@e.ActorType</td>
+                    <td><span class="tag @TagClass(e.Action)">@e.Action</span></td>
+                    <td class="mono">@e.Target</td>
+                    <td class="mono small">@e.PayloadJson</td>
+                    <td class="mono small">@e.Ip</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+
+@code {
+    [SupplyParameterFromQuery(Name = "action")] private string? ActionFilter { get; set; }
+
+    private List<AuditLog> recent = [];
+    private long? broken;
+    private int total;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Проверка цепочки целиком: записей аудита немного, переводы клиентов сюда не пишутся.
+        var all = await Db.AuditLogs.AsNoTracking().OrderBy(a => a.Id).ToListAsync();
+        total = all.Count;
+        broken = AuditLog.FindBrokenLink(all);
+
+        IEnumerable<AuditLog> view = all;
+        if (!string.IsNullOrWhiteSpace(ActionFilter))
+            view = view.Where(a => a.Action.Contains(ActionFilter.Trim(), StringComparison.OrdinalIgnoreCase));
+        recent = view.Reverse().Take(200).ToList();
+    }
+
+    private static string TagClass(string action) =>
+        action.Contains("locked") || action.Contains("reuse") || action.Contains("failed") ? "bad"
+        : action.Contains("success") || action.Contains("enabled") ? "ok"
+        : "";
+}

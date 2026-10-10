@@ -24,6 +24,9 @@ catch (Exception e) when (e is ArgumentException or FormatException)
     return 2;
 }
 
+if (o.Demo)
+    return await DemoHistory.RunAsync(o.ConnectionString, o.Seed);
+
 Console.WriteLine($"Nova.Seeder: {o.Clients:N0} клиентов, {o.Transfers:N0} переводов, {o.Months} мес.");
 
 Console.Write("▸ Миграции... ");

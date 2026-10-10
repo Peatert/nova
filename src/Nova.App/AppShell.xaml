@@ -16,13 +16,13 @@
 
     <!-- После входа — нижнее меню как в макетах -->
     <TabBar Route="main">
-        <Tab Title="Главная" Route="home">
+        <Tab Title="Главная" Route="home" Icon="tab_home.png">
             <ShellContent Route="homepage" ContentTemplate="{DataTemplate views:HomePage}" />
         </Tab>
-        <Tab Title="Платежи" Route="payments">
+        <Tab Title="Платежи" Route="payments" Icon="tab_payments.png">
             <ShellContent Route="transferpage" ContentTemplate="{DataTemplate views:TransferPage}" />
         </Tab>
-        <Tab Title="Ещё" Route="more">
+        <Tab Title="Ещё" Route="more" Icon="tab_more.png">
             <ShellContent Route="profilepage" ContentTemplate="{DataTemplate views:ProfilePage}" />
         </Tab>
     </TabBar>

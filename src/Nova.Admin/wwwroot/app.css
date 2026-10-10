@@ -1,0 +1,138 @@
+/* Nova — консоль. Та же палитра, что в приложении: глубокий космос и красная сверхновая. */
+:root {
+  --bg: #06060c;
+  --card: rgba(20, 20, 30, 0.85);
+  --line: rgba(255, 255, 255, 0.08);
+  --fg: #f5f5f7;
+  --muted: #a3a3b2;
+  --accent: #e5303f;
+  --accent-text: #ff5a68;
+  --ok: #6ee7a0;
+  --radius: 20px;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.5 "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+a { color: var(--accent-text); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Звёздное небо + сверхновая. Чистый CSS, без картинок. */
+.stars {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 92% 4%, rgba(229, 48, 63, 0.55) 0, rgba(229, 48, 63, 0.18) 14%, transparent 38%),
+    radial-gradient(1px 1px at 12% 22%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 33% 78%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 51% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 68% 64%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 84% 36%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 22% 55%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 77% 88%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 5% 92%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 95% 70%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 44% 40%, #fff 50%, transparent 51%);
+  animation: twinkle 6s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle { from { opacity: 0.75; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .stars { animation: none; } }
+
+/* Каркас */
+.shell { display: flex; flex-wrap: wrap; gap: 24px; padding: 24px; max-width: 1440px; margin: 0 auto; }
+.side {
+  flex: 1 1 220px; max-width: 260px; align-self: flex-start;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px 14px; display: flex; flex-direction: column; gap: 4px;
+}
+.content { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+
+.brand { font-weight: 800; font-size: 22px; letter-spacing: 6px; padding: 0 10px; }
+.brand.big { font-size: 40px; letter-spacing: 12px; text-align: center; padding: 0; }
+.brand-sub { color: var(--muted); font-size: 13px; padding: 0 10px 14px; }
+.login .brand-sub { text-align: center; padding-bottom: 20px; }
+
+nav { display: flex; flex-direction: column; gap: 2px; }
+nav a { color: #c9c9d4; padding: 11px 12px; border-radius: 12px; font-weight: 600; }
+nav a:hover { background: rgba(255, 255, 255, 0.04); text-decoration: none; }
+nav a.active { background: rgba(229, 48, 63, 0.18); color: var(--accent-text); }
+
+.who { margin-top: 18px; padding: 14px 10px 0; border-top: 1px solid var(--line); }
+.who-name { font-weight: 700; }
+.who-role, .who-mfa { color: var(--muted); font-size: 13px; }
+.who-mfa { color: var(--accent-text); margin-bottom: 10px; }
+
+/* Карточки и типографика */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+h1 { margin: 0 0 4px; font-size: 26px; }
+h2 { margin: 0 0 14px; font-size: 18px; }
+.muted { color: var(--muted); font-size: 13px; margin: 0; }
+.page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.kpi-label { color: var(--muted); font-size: 13px; }
+.kpi-value { font-size: 26px; font-weight: 800; margin: 6px 0 2px; }
+.kpi-note { color: var(--muted); font-size: 12px; }
+.kpi.ok .kpi-value { color: var(--ok); }
+.kpi.bad { border-color: rgba(229, 48, 63, 0.6); }
+.kpi.bad .kpi-value { color: var(--accent-text); }
+
+/* График по дням — обычные div, без библиотек */
+.bars { display: flex; align-items: flex-end; gap: 8px; height: 180px; }
+.bar-col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; }
+.bar { width: 100%; max-width: 38px; background: var(--accent); border-radius: 6px 6px 2px 2px; min-height: 2px; }
+.bar-label { color: var(--muted); font-size: 12px; }
+
+/* Таблицы */
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 13px; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+.mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 13px; }
+.small { font-size: 12px; color: #c9c9d4; word-break: break-all; }
+section.card { overflow-x: auto; }
+
+.tag { padding: 2px 8px; border-radius: 8px; background: rgba(255, 255, 255, 0.06); font-size: 12px; font-family: Consolas, monospace; }
+.tag.bad { background: rgba(229, 48, 63, 0.18); color: var(--accent-text); }
+.tag.ok { background: rgba(110, 231, 160, 0.12); color: var(--ok); }
+
+/* Формы */
+input {
+  width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.35); color: var(--fg); font-size: 16px;
+}
+input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+label { display: block; color: var(--muted); font-size: 13px; margin: 14px 0 6px; }
+
+button {
+  border: none; border-radius: 14px; background: var(--accent); color: #fff;
+  font-weight: 700; font-size: 15px; padding: 12px 20px; cursor: pointer; min-height: 44px;
+}
+button:hover { filter: brightness(1.1); }
+button.ghost { background: transparent; border: 1px solid rgba(255, 255, 255, 0.15); color: var(--fg); width: 100%; }
+
+.search { display: flex; gap: 10px; }
+.search input { flex: 1; }
+
+.login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.login { width: 100%; max-width: 400px; }
+.login button { width: 100%; margin-top: 18px; }
+.error { color: var(--accent-text); margin: 12px 0 0; }
+.hint { color: var(--muted); font-size: 12px; text-align: center; margin: 14px 0 0; }
+
+@media (max-width: 720px) {
+  .shell { padding: 12px; }
+  .side { max-width: none; }
+  nav { flex-direction: row; flex-wrap: wrap; }
+}
