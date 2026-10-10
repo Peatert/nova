@@ -4,7 +4,7 @@
 сайт и PostgreSQL на 5 млн проводок.
 **Не является кредитной организацией.** Все данные в базе сгенерированы, люди и карты вымышлены.
 
-[![CI](https://github.com/Peatert/nova/actions/workflows/ci.yml/badge.svg)](https://github.com/Peatert/nova/actions/workflows/ci.yml)
+[![CI](https://github.com/Peatert/nova/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Peatert/nova/actions/workflows/ci.yml)
 
 **Сайт:** https://peatert.github.io/nova/ · **Сценарий демо-видео:** [docs/demo-script.md](docs/demo-script.md)
 
@@ -12,9 +12,27 @@
   <img src="docs/screens/site.png" alt="Сайт Nova" width="100%">
 </p>
 
-| Приложение (Android) | Консоль владельца |
-|---|---|
-| <img src="docs/screens/app-home.png" alt="Главный экран приложения" width="300"> | <img src="docs/screens/admin-dashboard.png" alt="Обзор банка в консоли" width="100%"><br><br><img src="docs/screens/admin-audit.png" alt="Аудит-лог с проверкой цепочки" width="100%"> |
+<table>
+  <tr>
+    <th>Приложение (Android)</th>
+    <th>Консоль владельца</th>
+  </tr>
+  <tr>
+    <td valign="top" width="30%"><img src="docs/screens/app-home.png" alt="Главный экран приложения" width="100%"></td>
+    <td valign="top"><img src="docs/screens/admin-dashboard.png" alt="Обзор банка в консоли" width="100%"></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th width="50%">Аудит-лог с проверкой цепочки SHA-256</th>
+    <th width="50%">Поиск клиентов, маскирование телефонов</th>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/screens/admin-audit.png" alt="Аудит-лог" width="100%"></td>
+    <td valign="top"><img src="docs/screens/admin-clients.png" alt="Клиенты" width="100%"></td>
+  </tr>
+</table>
 
 ## Что внутри — за 30 секунд
 
