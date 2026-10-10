@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Nova.App.ViewModels"
+             xmlns:controls="clr-namespace:Nova.App.Controls"
+             x:Class="Nova.App.Views.LoginPage"
+             x:DataType="vm:LoginViewModel">
+    <Grid>
+        <controls:StarfieldView />
+
+        <ScrollView>
+            <VerticalStackLayout Padding="28,90,28,32" Spacing="16" MaximumWidthRequest="480">
+
+                <Label Text="NOVA" FontSize="48" FontAttributes="Bold" CharacterSpacing="10"
+                       HorizontalOptions="Center" />
+                <Label Text="Деньги со скоростью света" Style="{StaticResource Caption}"
+                       HorizontalOptions="Center" Margin="0,0,0,36" />
+
+                <!-- Шаг 1: телефон и пароль -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding IsPasswordStep}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Телефон" Style="{StaticResource Caption}" />
+                        <Entry Text="{Binding Phone}" Keyboard="Telephone" Placeholder="+7 999 000-00-00" />
+                        <Label Text="Пароль" Style="{StaticResource Caption}" Margin="0,10,0,0" />
+                        <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Пароль"
+                               ReturnCommand="{Binding SubmitCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Шаг 2: код 2FA -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding IsMfaStep}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Код из приложения-аутентификатора" Style="{StaticResource Caption}" />
+                        <Entry Text="{Binding Code}" Keyboard="Numeric" MaxLength="6" FontSize="30"
+                               CharacterSpacing="8" HorizontalTextAlignment="Center" Placeholder="000000"
+                               ReturnCommand="{Binding SubmitCommand}" />
+                        <Label Text="Назад к паролю" Style="{StaticResource Caption}" HorizontalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding BackCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Text="{Binding Error}" Style="{StaticResource ErrorText}" IsVisible="{Binding HasError}" />
+
+                <Button Text="{Binding SubmitText}" Command="{Binding SubmitCommand}" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+                <Label Text="Сервер API" Style="{StaticResource Caption}" Margin="0,36,0,0" />
+                <Entry Text="{Binding ServerUrl}" Keyboard="Url" FontSize="14" />
+                <Label Text="Демо: +7 999 000-00-00 · Nova-client-2026!" Style="{StaticResource Caption}"
+                       HorizontalOptions="Center" Margin="0,8,0,0" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

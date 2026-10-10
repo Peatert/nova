@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell x:Class="Nova.App.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:Nova.App.Views"
+       Shell.FlyoutBehavior="Disabled"
+       Shell.NavBarIsVisible="False"
+       Shell.BackgroundColor="#06060C"
+       Shell.TabBarBackgroundColor="#0A0A10"
+       Shell.TabBarForegroundColor="#FF5A68"
+       Shell.TabBarTitleColor="#FF5A68"
+       Shell.TabBarUnselectedColor="#A3A3B2">
+
+    <!-- Вход — отдельный корень без нижнего меню -->
+    <ShellContent Route="login" ContentTemplate="{DataTemplate views:LoginPage}" />
+
+    <!-- После входа — нижнее меню как в макетах -->
+    <TabBar Route="main">
+        <Tab Title="Главная" Route="home">
+            <ShellContent Route="homepage" ContentTemplate="{DataTemplate views:HomePage}" />
+        </Tab>
+        <Tab Title="Платежи" Route="payments">
+            <ShellContent Route="transferpage" ContentTemplate="{DataTemplate views:TransferPage}" />
+        </Tab>
+        <Tab Title="Ещё" Route="more">
+            <ShellContent Route="profilepage" ContentTemplate="{DataTemplate views:ProfilePage}" />
+        </Tab>
+    </TabBar>
+</Shell>

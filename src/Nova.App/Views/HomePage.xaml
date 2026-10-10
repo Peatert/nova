@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Nova.App.ViewModels"
+             xmlns:controls="clr-namespace:Nova.App.Controls"
+             x:Class="Nova.App.Views.HomePage"
+             x:DataType="vm:HomeViewModel">
+    <Grid>
+        <controls:StarfieldView />
+
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+            <ScrollView>
+                <VerticalStackLayout Padding="16,28,16,24" Spacing="12">
+
+                    <!-- Шапка -->
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" Margin="0,0,0,8">
+                        <Border WidthRequest="44" HeightRequest="44" StrokeThickness="0"
+                                StrokeShape="RoundRectangle 22" BackgroundColor="{StaticResource Accent}">
+                            <Label Text="{Binding Initial}" TextColor="White" FontSize="18" FontAttributes="Bold"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="{Binding Name}" FontSize="17" FontAttributes="Bold" />
+                            <Label Text="NOVA PRO" TextColor="{StaticResource AccentText}" FontSize="11" CharacterSpacing="2" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Label Text="{Binding Error}" Style="{StaticResource ErrorText}" IsVisible="{Binding HasError}" />
+
+                    <!-- Все деньги + счета -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="2">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Все деньги" Style="{StaticResource Caption}" />
+                                <Label Grid.Column="1" Text="{Binding HideText}" Style="{StaticResource Caption}">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ToggleHideCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+                            <Label Text="{Binding TotalText}" FontSize="32" FontAttributes="Bold" Margin="0,2,0,10" />
+
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Accounts}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:AccountItem">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="0,8">
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Open}" CommandParameter="{Binding .}" />
+                                            </Grid.GestureRecognizers>
+                                            <Border WidthRequest="46" HeightRequest="30" StrokeThickness="0"
+                                                    StrokeShape="RoundRectangle 6" BackgroundColor="{Binding TagColor}">
+                                                <Label Text="{Binding Tag}" TextColor="White" FontSize="9" FontAttributes="Bold"
+                                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Title}" FontSize="15" FontAttributes="Bold" />
+                                                <Label Text="{Binding Subtitle}" Style="{StaticResource Caption}" />
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="2" Text="{Binding BalanceText}" FontSize="15"
+                                                   FontAttributes="Bold" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Быстрое действие -->
+                    <Button Text="Перевести по номеру телефона" Command="{Binding GoTransferCommand}" />
+
+                    <!-- Лента операций -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout>
+                            <Label Text="Операции" FontSize="17" FontAttributes="Bold" Margin="0,0,0,6" />
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Operations}">
+                                <BindableLayout.EmptyView>
+                                    <Label Text="Операций пока нет" Style="{StaticResource Caption}" Margin="0,8" />
+                                </BindableLayout.EmptyView>
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:OperationItem">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="0,9">
+                                            <Border WidthRequest="40" HeightRequest="40" StrokeThickness="0"
+                                                    StrokeShape="RoundRectangle 20" BackgroundColor="{Binding BadgeColor}">
+                                                <Label Text="{Binding Letter}" TextColor="White" FontAttributes="Bold"
+                                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Title}" FontSize="15" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                                                <Label Text="{Binding Subtitle}" Style="{StaticResource Caption}" LineBreakMode="TailTruncation" />
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="2" Text="{Binding AmountText}" TextColor="{Binding AmountColor}"
+                                                   FontSize="15" FontAttributes="Bold" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

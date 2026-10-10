@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Nova.App.App">
+    <Application.Resources>
+        <ResourceDictionary>
+
+            <!-- Палитра Nova: глубокий космос + красная сверхновая -->
+            <Color x:Key="Bg">#06060C</Color>
+            <Color x:Key="CardBg">#D914141E</Color>
+            <Color x:Key="Accent">#E5303F</Color>
+            <Color x:Key="AccentText">#FF5A68</Color>
+            <Color x:Key="Fg">#F5F5F7</Color>
+            <Color x:Key="Muted">#A3A3B2</Color>
+            <Color x:Key="Positive">#6EE7A0</Color>
+            <Color x:Key="Chip">#22222E</Color>
+
+            <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+                <Setter Property="BackgroundColor" Value="{StaticResource Bg}" />
+                <Setter Property="Shell.NavBarIsVisible" Value="False" />
+            </Style>
+
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource Fg}" />
+                <Setter Property="FontSize" Value="15" />
+            </Style>
+            <Style x:Key="Caption" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource Muted}" />
+                <Setter Property="FontSize" Value="13" />
+            </Style>
+            <Style x:Key="H1" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource Fg}" />
+                <Setter Property="FontSize" Value="22" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+            <Style x:Key="ErrorText" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource AccentText}" />
+                <Setter Property="FontSize" Value="14" />
+            </Style>
+
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="{StaticResource Fg}" />
+                <Setter Property="PlaceholderColor" Value="{StaticResource Muted}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontSize" Value="18" />
+            </Style>
+
+            <Style TargetType="Picker">
+                <Setter Property="TextColor" Value="{StaticResource Fg}" />
+                <Setter Property="TitleColor" Value="{StaticResource Muted}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource Accent}" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="HeightRequest" Value="54" />
+                <Setter Property="Padding" Value="16,0" />
+            </Style>
+            <Style x:Key="GhostButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="BorderColor" Value="#33FFFFFF" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="TextColor" Value="{StaticResource Fg}" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="HeightRequest" Value="50" />
+            </Style>
+
+            <!-- Полупрозрачная карточка: звёзды просвечивают сквозь неё -->
+            <Style x:Key="Card" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBg}" />
+                <Setter Property="Stroke" Value="#1FFFFFFF" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 22" />
+                <Setter Property="Padding" Value="18" />
+            </Style>
+
+            <Style TargetType="ActivityIndicator">
+                <Setter Property="Color" Value="{StaticResource Accent}" />
+            </Style>
+            <Style TargetType="RefreshView">
+                <Setter Property="RefreshColor" Value="{StaticResource Accent}" />
+            </Style>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

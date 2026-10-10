@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Nova.App.ViewModels"
+             xmlns:controls="clr-namespace:Nova.App.Controls"
+             x:Class="Nova.App.Views.ProfilePage"
+             x:DataType="vm:ProfileViewModel">
+    <Grid>
+        <controls:StarfieldView />
+
+        <ScrollView>
+            <VerticalStackLayout Padding="16,40,16,24" Spacing="14">
+
+                <Border WidthRequest="88" HeightRequest="88" StrokeThickness="0" HorizontalOptions="Center"
+                        StrokeShape="RoundRectangle 44" BackgroundColor="{StaticResource Accent}">
+                    <Label Text="{Binding Initial}" TextColor="White" FontSize="34" FontAttributes="Bold"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <Label Text="{Binding FullName}" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" />
+                <Label Text="NOVA PRO" TextColor="{StaticResource AccentText}" FontSize="12" CharacterSpacing="2"
+                       HorizontalOptions="Center" />
+
+                <Label Text="{Binding Error}" Style="{StaticResource ErrorText}" IsVisible="{Binding HasError}" />
+
+                <Border Style="{StaticResource Card}" Margin="0,12,0,0">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Безопасность" Style="{StaticResource Caption}" />
+                        <Label Text="{Binding Security}" FontSize="15" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Сессия" Style="{StaticResource Caption}" />
+                        <Label Text="Токены хранятся в защищённом хранилище устройства. Пароль на устройстве не сохраняется." FontSize="15" />
+                        <Label Text="{Binding Server, StringFormat='Сервер: {0}'}" Style="{StaticResource Caption}" Margin="0,6,0,0" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button Text="Выйти из аккаунта" Style="{StaticResource GhostButton}"
+                        TextColor="{StaticResource AccentText}" Command="{Binding LogoutCommand}" Margin="0,12,0,0" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

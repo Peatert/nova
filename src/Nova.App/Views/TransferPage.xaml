@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Nova.App.ViewModels"
+             xmlns:controls="clr-namespace:Nova.App.Controls"
+             x:Class="Nova.App.Views.TransferPage"
+             x:DataType="vm:TransferViewModel">
+    <Grid>
+        <controls:StarfieldView />
+
+        <!-- Форма перевода -->
+        <ScrollView IsVisible="{Binding IsForm}">
+            <VerticalStackLayout Padding="16,28,16,24" Spacing="12">
+                <Label Text="Перевод по номеру телефона" Style="{StaticResource H1}" Margin="0,0,0,8" />
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Откуда" Style="{StaticResource Caption}" />
+                        <Picker ItemsSource="{Binding SourceAccounts}" SelectedItem="{Binding SelectedAccount}"
+                                Title="Выберите счёт" FontSize="15" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Номер получателя" Style="{StaticResource Caption}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Entry Text="{Binding Phone}" Keyboard="Telephone" Placeholder="+7 999 000-00-05"
+                                   ReturnCommand="{Binding FindRecipientCommand}" />
+                            <Button Grid.Column="1" Text="Найти" Style="{StaticResource GhostButton}"
+                                    HeightRequest="42" Padding="14,0" Command="{Binding FindRecipientCommand}" />
+                        </Grid>
+                        <Label Text="{Binding RecipientName}" TextColor="{StaticResource AccentText}"
+                               FontAttributes="Bold" Margin="0,4,0,0" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Сумма, ₽" Style="{StaticResource Caption}" />
+                        <Entry Text="{Binding Amount}" Keyboard="Numeric" Placeholder="0" FontSize="32"
+                               FontAttributes="Bold" />
+                        <Label Text="Комментарий" Style="{StaticResource Caption}" Margin="0,8,0,0" />
+                        <Entry Text="{Binding Comment}" Placeholder="Необязательно" MaxLength="140" FontSize="15" />
+                        <Label Text="Без комиссии · до 300 000 ₽ за перевод · до 1 000 000 ₽ в сутки"
+                               Style="{StaticResource Caption}" FontSize="12" Margin="0,8,0,0" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Text="{Binding Error}" Style="{StaticResource ErrorText}" IsVisible="{Binding HasError}" />
+                <Button Text="Перевести" Command="{Binding SendCommand}" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Экран успеха: волны расходятся от галочки, как вспышка сверхновой -->
+        <VerticalStackLayout IsVisible="{Binding IsDone}" VerticalOptions="Center" Spacing="16" Padding="24">
+            <Grid WidthRequest="150" HeightRequest="150" HorizontalOptions="Center">
+                <Ellipse x:Name="Ring1" Stroke="#E5303F" StrokeThickness="2" WidthRequest="120" HeightRequest="120"
+                         HorizontalOptions="Center" VerticalOptions="Center" />
+                <Ellipse x:Name="Ring2" Stroke="#E5303F" StrokeThickness="2" WidthRequest="120" HeightRequest="120"
+                         HorizontalOptions="Center" VerticalOptions="Center" />
+                <Border x:Name="Check" WidthRequest="120" HeightRequest="120" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 60" BackgroundColor="{StaticResource Accent}"
+                        HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="✓" TextColor="White" FontSize="56" FontAttributes="Bold"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+            <Label Text="{Binding ResultAmount}" FontSize="34" FontAttributes="Bold" HorizontalOptions="Center" />
+            <Label Text="{Binding ResultRecipient}" FontSize="17" HorizontalOptions="Center" />
+            <Label Text="{Binding ResultBalance}" Style="{StaticResource Caption}" HorizontalOptions="Center" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,16,0,0">
+                <Button Text="Ещё перевод" Style="{StaticResource GhostButton}" Command="{Binding NewTransferCommand}" />
+                <Button Grid.Column="1" Text="На главную" Command="{Binding GoHomeCommand}" />
+            </Grid>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Nova.App.ViewModels"
+             xmlns:controls="clr-namespace:Nova.App.Controls"
+             x:Class="Nova.App.Views.StatementPage"
+             x:DataType="vm:StatementViewModel">
+    <Grid RowDefinitions="Auto,Auto,*">
+        <controls:StarfieldView Grid.RowSpan="3" />
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="12" Padding="16,24,16,8">
+            <Button Text="←" Style="{StaticResource GhostButton}" WidthRequest="48" HeightRequest="48"
+                    Padding="0" FontSize="20" Command="{Binding BackCommand}" />
+            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" />
+                <Label Text="Выписка за 90 дней" Style="{StaticResource Caption}" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <Label Grid.Row="1" Text="{Binding Error}" Style="{StaticResource ErrorText}"
+               IsVisible="{Binding HasError}" Margin="16,0" />
+
+        <!-- Подгрузка следующей страницы, когда до конца списка осталось 5 строк -->
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Items}" Margin="16,0"
+                        RemainingItemsThreshold="5"
+                        RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
+            <CollectionView.EmptyView>
+                <Label Text="За 90 дней операций нет" Style="{StaticResource Caption}"
+                       HorizontalOptions="Center" Margin="0,40" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:OperationItem">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="4,10">
+                        <Border WidthRequest="40" HeightRequest="40" StrokeThickness="0"
+                                StrokeShape="RoundRectangle 20" BackgroundColor="{Binding BadgeColor}">
+                            <Label Text="{Binding Letter}" TextColor="White" FontAttributes="Bold"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="{Binding Title}" FontSize="15" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                            <Label Text="{Binding Subtitle}" Style="{StaticResource Caption}" LineBreakMode="TailTruncation" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2" Text="{Binding AmountText}" TextColor="{Binding AmountColor}"
+                               FontSize="15" FontAttributes="Bold" VerticalOptions="Center" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.Footer>
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Margin="0,12" />
+            </CollectionView.Footer>
+        </CollectionView>
+    </Grid>
+</ContentPage>
