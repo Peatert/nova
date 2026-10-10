@@ -109,3 +109,59 @@ POST {{host}}/api/auth/logout
 Content-Type: application/json
 
 { "refreshToken": "{{ownerMfa.response.body.$.refreshToken}}" }
+
+### ═══════════ НЕДЕЛЯ 4: счета, переводы, выписка ═══════════
+# Сначала выполни запрос «1. Клиент: вход по телефону» в начале файла.
+
+### Мои счета
+# @name accounts
+GET {{host}}/api/accounts
+Authorization: Bearer {{client.response.body.$.accessToken}}
+
+### Кто получатель? (видно только «Имя Ф.»)
+GET {{host}}/api/transfers/recipient?phone=%2B79990000005
+Authorization: Bearer {{client.response.body.$.accessToken}}
+
+### Перевод по телефону. Idempotency-Key — новый GUID на каждый НОВЫЙ перевод.
+# Отправь этот запрос второй раз без изменений: ответ 200 и тот же id, деньги не спишутся повторно.
+# @name transfer
+POST {{host}}/api/transfers
+Authorization: Bearer {{client.response.body.$.accessToken}}
+Content-Type: application/json
+Idempotency-Key: 2b8f6c1e-3a4d-4e5f-9a7b-1c2d3e4f5a6b
+
+{
+  "fromAccountId": "{{accounts.response.body.$[0].id}}",
+  "toPhone": "+7 999 000-00-05",
+  "amount": 150.75,
+  "comment": "Тест перевода"
+}
+
+### Тот же ключ, другая сумма → 409
+POST {{host}}/api/transfers
+Authorization: Bearer {{client.response.body.$.accessToken}}
+Content-Type: application/json
+Idempotency-Key: 2b8f6c1e-3a4d-4e5f-9a7b-1c2d3e4f5a6b
+
+{ "fromAccountId": "{{accounts.response.body.$[0].id}}", "toPhone": "+79990000005", "amount": 999 }
+
+### Больше, чем есть на счёте → 422
+POST {{host}}/api/transfers
+Authorization: Bearer {{client.response.body.$.accessToken}}
+Content-Type: application/json
+Idempotency-Key: {{$guid}}
+
+{ "fromAccountId": "{{accounts.response.body.$[0].id}}", "toPhone": "+79990000005", "amount": 99999999 }
+
+### Выписка за последние 90 дней (по умолчанию)
+# @name statement
+GET {{host}}/api/accounts/{{accounts.response.body.$[0].id}}/statement?limit=10
+Authorization: Bearer {{client.response.body.$.accessToken}}
+
+### Следующая страница выписки (курсор next из прошлого ответа)
+GET {{host}}/api/accounts/{{accounts.response.body.$[0].id}}/statement?limit=10&before={{statement.response.body.$.next}}
+Authorization: Bearer {{client.response.body.$.accessToken}}
+
+### Детали перевода
+GET {{host}}/api/transfers/{{transfer.response.body.$.id}}
+Authorization: Bearer {{client.response.body.$.accessToken}}

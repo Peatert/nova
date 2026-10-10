@@ -5,11 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Nova.Api;
 using Nova.Api.Auth;
+using Nova.Api.Banking;
 using Nova.Domain.Security;
 using Nova.Infrastructure;
 using Nova.Infrastructure.Audit;
 using Nova.Infrastructure.Persistence;
 using Nova.Infrastructure.Security;
+using Nova.Infrastructure.Transfers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,7 @@ builder.Services.AddSingleton(new FieldEncryptor(encryptionKey));
 builder.Services.AddNovaInfrastructure(builder.Configuration);
 builder.Services.AddScoped<AuditWriter>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<TransferService>();
 
 builder.Services.ConfigureHttpJsonOptions(o =>
     o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -94,5 +97,9 @@ app.MapHealthChecks("/health");
 app.MapAuthEndpoints();
 app.MapMeEndpoints();
 app.MapSystemEndpoints();
+app.MapBankingEndpoints();
 
 app.Run();
+
+// Нужно integration-тестам: WebApplicationFactory<Program> запускает API целиком.
+public partial class Program { }
