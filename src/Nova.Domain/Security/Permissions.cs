@@ -3,6 +3,12 @@ namespace Nova.Domain.Security;
 /// <summary>Атомарные права. Роль = набор прав; проверки в коде идут по правам, не по ролям.</summary>
 public static class Permissions
 {
+    /// <summary>Все права — для регистрации политик авторизации.</summary>
+    public static IEnumerable<string> All() =>
+        typeof(Permissions).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+            .Where(f => f.IsLiteral && f.FieldType == typeof(string))
+            .Select(f => (string)f.GetRawConstantValue()!);
+
     public const string ClientsRead = "clients.read";
     public const string ClientsWrite = "clients.write";
     public const string ClientsPersonalData = "clients.personal_data";
@@ -33,6 +39,9 @@ public static class Roles
     public const string Accountant = "accountant";
     public const string Auditor = "auditor";
     public const string SysAdmin = "sysadmin";
+
+    /// <summary>Роли, которым без второго фактора не выдаётся ни одного права (только настройка 2FA).</summary>
+    public static readonly IReadOnlySet<string> RequireMfa = new HashSet<string> { Owner };
 
     public sealed record Definition(Guid Id, string Code, string Name, string[] Permissions);
 

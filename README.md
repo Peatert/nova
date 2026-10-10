@@ -19,7 +19,7 @@ Nova.sln
 ├─ src/
 │  ├─ Nova.Domain          сущности, бизнес-правила, роли и права, алгоритм Луна (без зависимостей)
 │  ├─ Nova.Infrastructure  EF Core, миграции, шифрование полей (AES-GCM), хеширование паролей (PBKDF2)
-│  ├─ Nova.Api             HTTP API
+│  ├─ Nova.Api             HTTP API: авторизация (JWT, 2FA), служебные эндпоинты
 │  └─ Nova.Seeder          генератор тестовых данных: 200 тыс. клиентов, 5 млн проводок
 ├─ tests/
 │  └─ Nova.Tests           unit-тесты
@@ -45,6 +45,13 @@ Nova.sln
 | Номер карты и паспорт — AES-256-GCM | В БД только шифротекст; подмена шифротекста обнаруживается |
 | Пароли — PBKDF2-SHA256, 100 000 итераций, соль | Утечка базы не раскрывает пароли |
 | Генерация через бинарный `COPY` | 7,5 млн строк за минуты, а не за часы через ORM |
+| JWT на 15 минут + refresh-токен с ротацией | Украденный access-токен быстро протухает; повторное использование refresh гасит всю сессию |
+| Refresh-токен хранится только как SHA-256 | Утечка таблицы `auth.refresh_tokens` не даёт войти |
+| 2FA (TOTP, RFC 6238) своей реализацией | Работает с Google Authenticator / Яндекс Ключ; один код нельзя использовать дважды |
+| Владелец без 2FA получает токен без прав | Самая привилегированная роль физически не работает на одном пароле |
+| 5 неверных паролей → блокировка на 15 минут | Защита от подбора; плюс лимит 10 запросов в минуту к `/api/auth` с IP |
+| Одинаковый ответ и время для «нет пользователя» и «неверный пароль» | По ответу нельзя узнать, зарегистрирован ли телефон |
+| Каждый вход, ошибка и блокировка — в аудит-лог в одной транзакции с действием | Действие без записи в журнале невозможно |
 
 ## Запуск
 
@@ -78,17 +85,28 @@ dotnet run --project src/Nova.Api
 | Любой клиент | телефон `+7999XXXXXXX`, например `+79990000000` | `Nova-client-2026!` |
 | Сотрудники | `owner`, `operator`, `support`, `credit`, `risk`, `accountant`, `auditor`, `sysadmin` | `Nova-staff-2026!` |
 
-Проверка:
+## API
 
-| URL | Что показывает |
-|---|---|
-| http://localhost:5080/health | Состояние API и БД |
-| http://localhost:5080/api/system/stats | Количество записей по таблицам |
-| http://localhost:5080/api/system/roles | Матрица ролей и прав |
-| http://localhost:5080/api/system/reconcile | Сверка: баланс = сумма проводок, дебет = кредит |
-| http://localhost:5080/api/system/partitions | Партиции книги проводок по месяцам |
-| http://localhost:5080/api/system/audit/verify | Целостность аудит-лога |
-| http://localhost:5080/openapi/v1.json | OpenAPI-спецификация |
+Все сценарии с готовыми запросами — в `src/Nova.Api/Nova.Api.http` (открыть в Visual Studio, «Send request»).
+
+| Метод | Путь | Доступ | Что делает |
+|---|---|---|---|
+| POST | `/api/auth/client/register` | все | Регистрация: клиент + дебетовый счёт + карта |
+| POST | `/api/auth/client/login` | все | Вход по телефону и паролю |
+| POST | `/api/auth/staff/login` | все | Вход сотрудника по логину |
+| POST | `/api/auth/2fa` | MFA-токен | Второй фактор: код из приложения |
+| POST | `/api/auth/refresh` | refresh-токен | Новая пара токенов, старый refresh отзывается |
+| POST | `/api/auth/logout` | refresh-токен | Отзыв всей сессии |
+| GET | `/api/me` | вошедший | Профиль, роль, права |
+| POST | `/api/me/2fa/setup`, `/confirm` | вошедший | Включение 2FA: QR-код и подтверждение |
+| GET | `/api/system/stats` | `reports.read` | Объём данных |
+| GET | `/api/system/reconcile` | `reports.read` | Сверка: баланс = сумма проводок, дебет = кредит |
+| GET | `/api/system/partitions` | `reports.read` | Партиции книги проводок |
+| GET | `/api/system/roles` | `staff.manage` | Матрица ролей и прав |
+| GET | `/api/system/audit/verify` | `audit.read` | Целостность цепочки аудита |
+| GET | `/api/system/audit/recent` | `audit.read` | Последние события аудита |
+| GET | `/health` | все | Состояние API и БД |
+| GET | `/openapi/v1.json` | все (dev) | OpenAPI-спецификация |
 
 pgAdmin: `docker compose --profile tools up -d` → http://localhost:5050 (admin@nova.local / admin).
 
@@ -133,7 +151,7 @@ pgAdmin: `docker compose --profile tools up -d` → http://localhost:5050 (admin
 
 - [x] Неделя 1 — солюшн, Docker, модель БД, роли, аудит, тесты домена
 - [x] Неделя 2 — генератор данных, партиционирование, шифрование полей, хеширование паролей, сверка
-- [ ] Неделя 3 — регистрация, вход, JWT, 2FA
+- [x] Неделя 3 — регистрация, вход, JWT + refresh с ротацией, 2FA (TOTP), блокировка, права на эндпоинтах
 - [ ] Неделя 4 — переводы, выписка
 - [ ] Неделя 5 — приложение MAUI
 - [ ] Неделя 6 — сайт, админка, README со скриншотами

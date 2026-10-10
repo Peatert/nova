@@ -14,6 +14,7 @@ internal static class Schemas
     public const string Transactions = "transactions";
     public const string Staff = "staff";
     public const string Audit = "audit";
+    public const string Auth = "auth";
 }
 
 internal sealed class ClientConfig : IEntityTypeConfiguration<Client>
@@ -135,5 +136,17 @@ internal sealed class AuditLogConfig : IEntityTypeConfiguration<AuditLog>
         e.Property(x => x.Hash).HasMaxLength(64).IsFixedLength();
         e.HasIndex(x => x.Hash).IsUnique();
         e.HasIndex(x => new { x.ActorId, x.CreatedAt });
+    }
+}
+
+internal sealed class RefreshTokenConfig : IEntityTypeConfiguration<RefreshToken>
+{
+    public void Configure(EntityTypeBuilder<RefreshToken> e)
+    {
+        e.ToTable("refresh_tokens", Schemas.Auth);
+        e.Property(x => x.TokenHash).HasMaxLength(64).IsFixedLength();
+        e.HasIndex(x => x.TokenHash).IsUnique();
+        e.HasIndex(x => x.FamilyId);
+        e.HasIndex(x => new { x.SubjectType, x.SubjectId });
     }
 }

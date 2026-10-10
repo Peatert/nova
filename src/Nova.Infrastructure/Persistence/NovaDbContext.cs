@@ -13,10 +13,13 @@ public class NovaDbContext(DbContextOptions<NovaDbContext> options) : DbContext(
     public DbSet<Staff> StaffMembers => Set<Staff>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
         b.ApplyConfigurationsFromAssembly(typeof(NovaDbContext).Assembly);
+        // Номера новых счетов. Старт выше диапазона сгенерированных данных, чтобы номера не пересеклись.
+        b.HasSequence<long>("account_number_seq", "accounts").StartsAt(100_000_000);
         b.ApplySnakeCaseNames();
     }
 

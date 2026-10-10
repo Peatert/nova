@@ -1,0 +1,111 @@
+# Сценарии для проверки API прямо из Visual Studio:
+# открой файл и нажми «Send request» над нужным запросом. API должен быть запущен.
+# Ответы запросов с "# @name" можно использовать в следующих запросах.
+
+@host = http://localhost:5080
+
+### ─────────── 1. Клиент: вход по телефону ───────────
+# @name client
+POST {{host}}/api/auth/client/login
+Content-Type: application/json
+
+{ "phone": "+7 999 000-00-00", "password": "Nova-client-2026!" }
+
+### Профиль клиента
+GET {{host}}/api/me
+Authorization: Bearer {{client.response.body.$.accessToken}}
+
+### Клиенту закрыты служебные эндпоинты → 403
+GET {{host}}/api/system/stats
+Authorization: Bearer {{client.response.body.$.accessToken}}
+
+### Обновление токенов (ротация: старый refresh больше не работает)
+# @name refreshed
+POST {{host}}/api/auth/refresh
+Content-Type: application/json
+
+{ "refreshToken": "{{client.response.body.$.refreshToken}}" }
+
+### Повторное использование СТАРОГО refresh → 401 и отзыв всей сессии (в аудите: auth.refresh.reuse_detected)
+POST {{host}}/api/auth/refresh
+Content-Type: application/json
+
+{ "refreshToken": "{{client.response.body.$.refreshToken}}" }
+
+### ─────────── 2. Регистрация нового клиента ───────────
+POST {{host}}/api/auth/client/register
+Content-Type: application/json
+
+{ "phone": "+7 916 555-12-34", "fullName": "Тестов Тест Тестович", "password": "MyPassword123" }
+
+### ─────────── 3. Блокировка: 5 неверных паролей → 423 ───────────
+# Выполни этот запрос 5 раз подряд. На шестой раз — тоже 423, даже с верным паролем, 15 минут.
+POST {{host}}/api/auth/client/login
+Content-Type: application/json
+
+{ "phone": "+79990000001", "password": "wrong-password-1" }
+
+### ─────────── 4. Аудитор: права есть сразу ───────────
+# @name auditor
+POST {{host}}/api/auth/staff/login
+Content-Type: application/json
+
+{ "login": "auditor", "password": "Nova-staff-2026!" }
+
+### Последние события аудита (видно все входы и ошибки выше)
+GET {{host}}/api/system/audit/recent?take=20
+Authorization: Bearer {{auditor.response.body.$.accessToken}}
+
+### Целостность цепочки аудита
+GET {{host}}/api/system/audit/verify
+Authorization: Bearer {{auditor.response.body.$.accessToken}}
+
+### ─────────── 5. Владелец: без 2FA прав нет ───────────
+# @name owner
+POST {{host}}/api/auth/staff/login
+Content-Type: application/json
+
+{ "login": "owner", "password": "Nova-staff-2026!" }
+
+### mfaSetupRequired = true, список прав пустой
+GET {{host}}/api/me
+Authorization: Bearer {{owner.response.body.$.accessToken}}
+
+### → 403: прав нет, пока не настроена 2FA
+GET {{host}}/api/system/reconcile
+Authorization: Bearer {{owner.response.body.$.accessToken}}
+
+### Настройка 2FA: в ответе qrCode — вставь его в адресную строку браузера и отсканируй телефоном
+POST {{host}}/api/me/2fa/setup
+Authorization: Bearer {{owner.response.body.$.accessToken}}
+
+### Подтверждение: впиши текущий код из приложения-аутентификатора
+POST {{host}}/api/me/2fa/confirm
+Authorization: Bearer {{owner.response.body.$.accessToken}}
+Content-Type: application/json
+
+{ "code": "000000" }
+
+### Вход владельца заново: теперь в ответе mfaToken вместо токенов
+# @name ownerPwd
+POST {{host}}/api/auth/staff/login
+Content-Type: application/json
+
+{ "login": "owner", "password": "Nova-staff-2026!" }
+
+### Второй фактор: впиши НОВЫЙ код (старый повторно не примется)
+# @name ownerMfa
+POST {{host}}/api/auth/2fa
+Content-Type: application/json
+
+{ "mfaToken": "{{ownerPwd.response.body.$.mfaToken}}", "code": "000000" }
+
+### Теперь у владельца все права его роли
+GET {{host}}/api/system/reconcile
+Authorization: Bearer {{ownerMfa.response.body.$.accessToken}}
+
+### Выход: отзывает всю сессию
+POST {{host}}/api/auth/logout
+Content-Type: application/json
+
+{ "refreshToken": "{{ownerMfa.response.body.$.refreshToken}}" }
