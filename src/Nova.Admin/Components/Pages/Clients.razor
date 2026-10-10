@@ -68,12 +68,31 @@
 
         var now = DateTimeOffset.UtcNow;
         var query = Db.Clients.AsNoTracking().Where(c => c.Phone != "+70000000000");
-        query = PhoneNumber.TryNormalize(q, out var phone)
-            ? query.Where(c => c.Phone == phone)
-            : query.Where(c => EF.Functions.ILike(c.FullName, "%" + q + "%"));
+        IOrderedQueryable<Nova.Domain.Entities.Client> ordered;
+        if (PhoneNumber.TryNormalize(q, out var phone))
+        {
+            ordered = query.Where(c => c.Phone == phone).OrderBy(c => c.FullName);
+        }
+        else
+        {
+            // ФИО хранится как «Фамилия Имя Отчество». Релевантность (чем меньше, тем выше):
+            //   0 — фамилия целиком равна запросу («Иванов»);
+            //   1 — имя целиком равно запросу («Иван» → «Петров Иван Сергеевич»);
+            //   2 — фамилия начинается с запроса («Иван» → «Иванова»);
+            //   3 — имя начинается с запроса;
+            //   4 — всё остальное (например, совпало только отчество «Ивановна»).
+            var s = EscapeLike(q);
+            ordered = query
+                .Where(c => EF.Functions.ILike(c.FullName, "%" + s + "%"))
+                .OrderBy(c => EF.Functions.ILike(c.FullName, s + " %") ? 0
+                            : EF.Functions.ILike(c.FullName, "% " + s + " %") ? 1
+                            : EF.Functions.ILike(c.FullName, s + "%") ? 2
+                            : EF.Functions.ILike(c.FullName, "% " + s + "% %") ? 3
+                            : 4)
+                .ThenBy(c => c.FullName);
+        }
 
-        rows = await query
-            .OrderBy(c => c.FullName)
+        rows = await ordered
             .Take(Limit)
             .Select(c => new Row(
                 c.FullName,
@@ -84,4 +103,8 @@
                 c.TotpEnabled))
             .ToListAsync();
     }
+
+    // % и _ из запроса — обычные символы, а не шаблон LIKE.
+    private static string EscapeLike(string s) =>
+        s.Replace(@"\", @"\\").Replace("%", @"\%").Replace("_", @"\_");
 }

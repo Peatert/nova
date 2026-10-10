@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Nova.Domain\Nova.Domain.csproj" />
     <ProjectReference Include="..\..\src\Nova.Infrastructure\Nova.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Nova.Seeder\Nova.Seeder.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />

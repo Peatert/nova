@@ -1,16 +1,52 @@
 # Nova
 
-Учебный проект необанка: API, веб-сайт, приложение для ПК и Android, админка сотрудников и панель владельца.
+Учебный проект цифрового банка: API, приложение для Windows и Android, консоль сотрудников с ролями и 2FA,
+сайт и PostgreSQL на 5 млн проводок.
 **Не является кредитной организацией.** Все данные в базе сгенерированы, люди и карты вымышлены.
+
+[![CI](https://github.com/Peatert/nova/actions/workflows/ci.yml/badge.svg)](https://github.com/Peatert/nova/actions/workflows/ci.yml)
+
+**Сайт:** https://peatert.github.io/nova/ · **Сценарий демо-видео:** [docs/demo-script.md](docs/demo-script.md)
+
+<p>
+  <img src="docs/screens/site.png" alt="Сайт Nova" width="100%">
+</p>
+
+| Приложение (Android) | Консоль владельца |
+|---|---|
+| <img src="docs/screens/app-home.png" alt="Главный экран приложения" width="300"> | <img src="docs/screens/admin-dashboard.png" alt="Обзор банка в консоли" width="100%"><br><br><img src="docs/screens/admin-audit.png" alt="Аудит-лог с проверкой цепочки" width="100%"> |
+
+## Что внутри — за 30 секунд
+
+- **Деньги посчитаны правильно.** Двойная запись, `numeric(19,4)`, CHECK на лимит в самой БД, сверка 5 млн проводок — ноль расхождений.
+- **Переводы не ломаются под нагрузкой.** `SELECT … FOR UPDATE` в порядке id, идемпотентность по ключу, 100 параллельных переводов с одного счёта проверены тестом.
+- **Безопасность как в банке.** JWT + refresh с ротацией и детектом кражи, TOTP своей реализацией, блокировка подбора, AES-256-GCM для карт и паспортов.
+- **Журнал нельзя подделать.** Аудит-лог — цепочка SHA-256, правка любой строки видна в консоли.
+- **Права, а не роли.** 8 ролей сотрудников; меню и страницы консоли строятся из одной матрицы прав. Даже владелец не видит полные телефоны клиентов.
+- **Быстро на больших данных.** Партиции по месяцам, выписка — 0,12 мс вместо 90 мс без индекса (замеры ниже).
+
+## Архитектура
+
+```mermaid
+flowchart LR
+    App["Nova.App<br/>.NET MAUI<br/>Windows · Android"] -->|HTTPS + JWT| Api
+    Site["site/<br/>лендинг<br/>GitHub Pages"]
+    Admin["Nova.Admin<br/>Blazor SSR<br/>cookie + 2FA"] --> Infra
+    Api["Nova.Api<br/>ASP.NET Core<br/>Minimal API"] --> Infra
+    Seeder["Nova.Seeder<br/>COPY binary<br/>5 млн проводок"] --> Infra
+    Infra["Nova.Infrastructure<br/>EF Core · шифрование<br/>TransferService · AuditWriter"] --> Db[("PostgreSQL 17<br/>партиции · аудит-цепочка")]
+    Infra --> Domain["Nova.Domain<br/>сущности · права · правила"]
+```
 
 ## Стек
 
-- .NET 10 (LTS), C#
-- ASP.NET Core Minimal API
+- .NET 10 (LTS), C# 14
+- ASP.NET Core Minimal API, Blazor (статический серверный рендеринг)
 - EF Core 10 + PostgreSQL 17 (Npgsql)
-- xUnit
+- .NET MAUI + CommunityToolkit.Mvvm
+- xUnit + Testcontainers
 - Docker Compose
-- Позже: .NET MAUI (приложение), Blazor (админка)
+- Сайт: HTML, CSS, canvas без фреймворков; деплой GitHub Actions → Pages
 
 ## Структура
 
@@ -27,6 +63,8 @@ Nova.sln
 ├─ tests/
 │  ├─ Nova.Tests              unit-тесты (без БД, секунды)
 │  └─ Nova.IntegrationTests   API + настоящий PostgreSQL в Docker (Testcontainers)
+├─ site/                   лендинг (статический, деплой на GitHub Pages)
+├─ docs/                   скриншоты и сценарий демо-видео
 ├─ db/
 │  └─ benchmarks.sql       замеры запросов: с индексами и без, партиции
 └─ docker-compose.yml      PostgreSQL (+ pgAdmin по профилю tools)
@@ -64,7 +102,7 @@ Nova.sln
 | Выписка только за период (по умолчанию 90 дней) + курсор | Отсечение партиций работает на каждом запросе выписки |
 | Integration-тесты на настоящем PostgreSQL (Testcontainers) | Блокировки, партиции и уникальные индексы проверяются по-настоящему, а не на моках |
 
-## Запуск
+## Быстрый старт
 
 Нужно: [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) и Docker Desktop.
 
@@ -95,6 +133,12 @@ dotnet run --project src/Nova.Api
 |---|---|---|
 | Любой клиент | телефон `+7999XXXXXXX`, например `+79990000000` | `Nova-client-2026!` |
 | Сотрудники | `owner`, `operator`, `support`, `credit`, `risk`, `accountant`, `auditor`, `sysadmin` | `Nova-staff-2026!` |
+
+## Сайт
+
+`site/` — статическая страница без сборки: открыть `site/index.html` в браузере.
+Публикация: GitHub → Settings → Pages → Source: **GitHub Actions**; дальше каждый push в `main` с изменениями в `site/`
+выкладывает сайт workflow `.github/workflows/pages.yml`.
 
 ## API
 
@@ -164,7 +208,8 @@ pgAdmin: `docker compose --profile tools up -d` → http://localhost:5050 (admin
 
 - Вход: логин + пароль + код 2FA. Владелец без включённой 2FA в консоль не попадает.
 - Cookie `HttpOnly` + `SameSite=Strict`, сессия 30 минут, защита от open redirect, общая блокировка после 5 ошибок.
-- Аудитор (`auditor`) видит только аудит: обзор и клиенты для него закрыты — проверка разделения прав.
+- Меню строится из прав роли: аудитор (`auditor`) видит только «Аудит» и «Сверку», после входа попадает сразу в свой раздел. Прямой переход на закрытую страницу — «Нет доступа».
+- Поиск клиентов ранжирует совпадения: сначала фамилия, потом имя, потом всё остальное (отчество).
 
 Демо-история для клиента `+79990000000` (около 200 операций за 90 дней, через настоящий `TransferService`):
 
@@ -181,6 +226,9 @@ dotnet run --project src/Nova.Seeder -c Release -- --demo
 | Карты | ~250 000 |
 | Переводы | 2 500 000 |
 | Проводки | 5 000 000 |
+
+Время переводов распределено реалистично (`ActivityTimeline`): ночью тишина, пики в обед и вечером,
+выходные тише будней, всплески 5-го и 20-го числа (зарплата и аванс), декабрьский пик, рост активности банка со временем.
 
 История за 18 месяцев: зарплаты, покупки, переводы по номеру телефона, пополнение и вывод с накопительного,
 погашение кредитки. Дебетовый счёт никогда не уходит в минус, кредитный — не дальше лимита.
@@ -217,4 +265,4 @@ dotnet run --project src/Nova.Seeder -c Release -- --demo
 - [x] Неделя 4 — переводы (блокировки, идемпотентность, лимиты), выписка за период, integration-тесты
 - [x] Неделя 5 — приложение MAUI (Android + Windows): вход с 2FA, счета, перевод, выписка, профиль
 - [x] Неделя 6.1 — консоль владельца (Blazor), демо-история, полировка приложения
-- [ ] Неделя 6.2 — лендинг, README со скриншотами, демо-видео
+- [x] Неделя 6.2 — лендинг, README со скриншотами и архитектурой, сезонность данных, сценарий демо-видео

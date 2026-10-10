@@ -1,0 +1,26 @@
+# Сборка и тесты на каждый push и pull request.
+# Приложение MAUI здесь не собирается (нужны workload'ы Android/Windows) — только сервер и тесты.
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["site/**", "docs/**", "**.md"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Unit-тесты
+        run: dotnet test tests/Nova.Tests -c Release
+      - name: Integration-тесты (PostgreSQL в Docker через Testcontainers)
+        run: dotnet test tests/Nova.IntegrationTests -c Release
+      - name: Сборка консоли
+        run: dotnet build src/Nova.Admin -c Release

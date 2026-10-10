@@ -230,14 +230,15 @@ internal sealed class DataGenerator(SeedOptions o, NpgsqlConnection conn, FieldE
     private void SeedTransfers()
     {
         long total = o.Transfers;
-        var spanTicks = (_end - _start).Ticks;
+        var timeline = new ActivityTimeline(_start, _end);
         var chunk = new List<Tx>(ChunkSize);
         var sw = Stopwatch.StartNew();
 
         for (long t = 0; t < total; t++)
         {
-            // Равномерно по времени; порядок генерации = хронологический порядок.
-            var at = _start.AddTicks((long)(spanTicks * ((double)t / total)));
+            // Время берётся из профиля активности (будни/выходные, зарплата, час суток, рост банка).
+            // Функция монотонная, поэтому порядок генерации по-прежнему = хронологический.
+            var at = timeline.At((t + 0.5) / total);
             chunk.Add(NextTransfer(at));
 
             if (chunk.Count == ChunkSize || t == total - 1)

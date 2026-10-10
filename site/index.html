@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nova — банк на скорости света</title>
+  <meta name="description" content="Nova — учебный проект цифрового банка: приложение для ПК и Android, консоль сотрудников, PostgreSQL на 5 млн проводок.">
+  <meta name="theme-color" content="#06060c">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="sky" aria-hidden="true"></canvas>
+
+  <header class="top">
+    <a class="logo" href="#">NOVA</a>
+    <nav class="menu">
+      <a href="#features">Возможности</a>
+      <a href="#security">Безопасность</a>
+      <a href="#inside">Как устроено</a>
+    </nav>
+    <a class="btn small" href="https://github.com/Peatert/nova">GitHub</a>
+  </header>
+
+  <main>
+    <!-- Первый экран -->
+    <section class="hero wrap">
+      <div class="hero-text">
+        <p class="eyebrow">Цифровой банк · учебный проект</p>
+        <h1>Деньги на&nbsp;скорости <span class="accent">света</span></h1>
+        <p class="lead">Переводы по&nbsp;номеру телефона за&nbsp;секунду, выписка за&nbsp;любой период и&nbsp;вход с&nbsp;двухфакторной защитой. Одно приложение для&nbsp;Windows и&nbsp;Android.</p>
+        <div class="cta">
+          <a class="btn" href="https://github.com/Peatert/nova#быстрый-старт">Запустить у себя</a>
+          <a class="btn ghost" href="https://github.com/Peatert/nova">Исходный код</a>
+        </div>
+      </div>
+
+      <div class="phone" aria-label="Главный экран приложения Nova">
+        <div class="phone-screen">
+          <div class="ph-head">
+            <span class="ph-avatar">П</span>
+            <span>Пётр</span>
+          </div>
+          <div class="ph-total">
+            <span class="ph-label">Всего на счетах</span>
+            <span class="ph-sum">128 430,50 ₽</span>
+          </div>
+          <div class="ph-card">
+            <span class="ph-card-name">Nova Black</span>
+            <span class="ph-card-num">•• 4021</span>
+            <span class="ph-card-sum">94 210,00 ₽</span>
+          </div>
+          <div class="ph-actions">
+            <span><i>↗</i>Перевести</span>
+            <span><i>＋</i>Пополнить</span>
+            <span><i>≡</i>Выписка</span>
+          </div>
+          <ul class="ph-ops">
+            <li><span class="op-ico">А</span><span class="op-name">Алексей Б.<small>Перевод</small></span><span class="op-sum out">−1 500 ₽</span></li>
+            <li><span class="op-ico in">₽</span><span class="op-name">Зарплата<small>Пополнение</small></span><span class="op-sum in">+87 000 ₽</span></li>
+            <li><span class="op-ico">М</span><span class="op-name">Мария И.<small>Перевод</small></span><span class="op-sum out">−320 ₽</span></li>
+          </ul>
+          <div class="ph-tabs"><b>Главная</b><span>Платежи</span><span>Ещё</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Цифры демо-базы -->
+    <section class="wrap" aria-label="Цифры проекта">
+      <div class="stats">
+      <div><b>200 000</b><span>клиентов в демо-базе</span></div>
+      <div><b>5 млн</b><span>проводок в книге</span></div>
+      <div><b>0,12 мс</b><span>выписка по счёту</span></div>
+      <div><b>0 ₽</b><span>расхождений при сверке</span></div>
+      </div>
+    </section>
+
+    <!-- Возможности -->
+    <section id="features" class="wrap block">
+      <h2>Всё, что нужно каждый день</h2>
+      <div class="grid">
+        <article class="tile">
+          <span class="ico">↗</span>
+          <h3>Переводы по номеру</h3>
+          <p>Введите телефон — Nova покажет имя получателя до отправки. Повторное нажатие не спишет деньги дважды.</p>
+        </article>
+        <article class="tile">
+          <span class="ico">≡</span>
+          <h3>Выписка за любой период</h3>
+          <p>До года одним запросом, с подгрузкой при прокрутке. Каждая строка — с остатком после операции.</p>
+        </article>
+        <article class="tile">
+          <span class="ico">◐</span>
+          <h3>Кредитная карта</h3>
+          <p>Лимит до 300 000 ₽. Баланс уходит в минус ровно до лимита — это проверяет сама база данных.</p>
+        </article>
+        <article class="tile">
+          <span class="ico">✦</span>
+          <h3>Накопительный счёт</h3>
+          <p>Откладывайте между своими счетами без комиссий и лимитов.</p>
+        </article>
+        <article class="tile">
+          <span class="ico">⌁</span>
+          <h3>ПК и Android</h3>
+          <p>Одно приложение на .NET MAUI: окно на Windows и полноценное приложение на телефоне.</p>
+        </article>
+        <article class="tile">
+          <span class="ico">◎</span>
+          <h3>Лимиты как в банке</h3>
+          <p>300 000 ₽ за перевод и 1 млн ₽ в сутки другим людям. Сутки считаются по Москве.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Безопасность -->
+    <section id="security" class="wrap block split">
+      <div>
+        <h2>Безопасность — не&nbsp;галочка</h2>
+        <p class="lead">Каждое решение здесь взято из&nbsp;практики настоящих банков и&nbsp;проверено тестами.</p>
+      </div>
+      <ul class="checks">
+        <li><b>Двухфакторный вход</b>Коды по RFC 6238. Владелец банка без 2FA не получает ни одного права.</li>
+        <li><b>Защита от подбора</b>5 ошибок — блокировка на 15 минут. Ответ один и тот же, логины не угадать.</li>
+        <li><b>Украденный токен бесполезен</b>Повторное использование refresh-токена отзывает всю цепочку сессий.</li>
+        <li><b>Шифрование данных</b>Номера карт и паспорта — AES-256-GCM. В базе нет ни одного открытого номера.</li>
+        <li><b>Журнал, который нельзя подделать</b>Каждая запись аудита хранит SHA-256 предыдущей. Правка одной строки видна сразу.</li>
+        <li><b>Роли сотрудников</b>8 ролей с разными правами. Даже владелец не видит полные телефоны клиентов.</li>
+      </ul>
+    </section>
+
+    <!-- Как устроено -->
+    <section id="inside" class="wrap block">
+      <h2>Как устроено</h2>
+      <div class="arch">
+        <div class="node"><b>Приложение</b><span>.NET MAUI · Windows, Android</span></div>
+        <div class="node"><b>Консоль сотрудников</b><span>Blazor SSR · роли и 2FA</span></div>
+        <div class="arrow" aria-hidden="true"></div>
+        <div class="node wide"><b>Nova.Api</b><span>ASP.NET Core · JWT · переводы · выписки</span></div>
+        <div class="arrow" aria-hidden="true"></div>
+        <div class="node wide db"><b>PostgreSQL 17</b><span>двойная запись · партиции по месяцам · хэш-цепочка аудита</span></div>
+      </div>
+      <ul class="chips">
+        <li>C# 14</li><li>.NET 10</li><li>ASP.NET Core</li><li>EF Core 10</li><li>PostgreSQL 17</li>
+        <li>Blazor</li><li>.NET MAUI</li><li>Docker</li><li>xUnit</li><li>Testcontainers</li>
+      </ul>
+    </section>
+
+    <section class="wrap final">
+      <h2>Посмотрите код целиком</h2>
+      <p class="lead">Миграции, тесты, генератор на 5 млн проводок и замеры производительности — всё в репозитории.</p>
+      <a class="btn" href="https://github.com/Peatert/nova">Открыть на GitHub</a>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <span>© 2026 Nova · Пётр Бурименко</span>
+    <span>Учебный проект для портфолио. Nova не является банком, не принимает вклады и не проводит реальные платежи.</span>
+  </footer>
+
+  <script src="sky.js"></script>
+</body>
+</html>

@@ -20,13 +20,13 @@
         <div class="brand-sub">Консоль управления банком</div>
 
         <label for="login">Логин</label>
-        <InputText id="login" @bind-Value="Input.Login" autocomplete="username" />
+        <InputText id="login" @bind-Value="Input!.Login" autocomplete="username" />
 
         <label for="password">Пароль</label>
-        <InputText id="password" type="password" @bind-Value="Input.Password" autocomplete="current-password" />
+        <InputText id="password" type="password" @bind-Value="Input!.Password" autocomplete="current-password" />
 
         <label for="code">Код из приложения-аутентификатора</label>
-        <InputText id="code" @bind-Value="Input.Code" inputmode="numeric" autocomplete="one-time-code" placeholder="000000" />
+        <InputText id="code" @bind-Value="Input!.Code" inputmode="numeric" autocomplete="one-time-code" placeholder="000000" />
 
         @if (error is not null)
         {
@@ -43,28 +43,32 @@
     private static readonly Lazy<string> DummyHash = new(() => PasswordHasher.Hash("nova-admin-dummy-0"));
 
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
-    [SupplyParameterFromForm] private LoginInput Input { get; set; } = new();
+    // Без инициализатора: при POST значение приходит из формы, а на GET создаём пустую модель (BL0008).
+    // Имена полей формы строятся из выражения привязки: Input!.Login → "Input.Login" — должно совпадать с именем свойства.
+    [SupplyParameterFromForm] private LoginInput? Input { get; set; }
     [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
 
     private string? error;
 
+    protected override void OnInitialized() => Input ??= new();
+
     private sealed class LoginInput
     {
-        public string Login { get; set; } = "";
-        public string Password { get; set; } = "";
-        public string Code { get; set; } = "";
+        public string? Login { get; set; }
+        public string? Password { get; set; }
+        public string? Code { get; set; }
     }
 
     private async Task SignInAsync()
     {
         var now = Time.GetUtcNow();
         var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-        var login = Input.Login.Trim().ToLowerInvariant();
+        var login = (Input!.Login ?? "").Trim().ToLowerInvariant();
 
         var staff = await Db.StaffMembers.Include(s => s.Role).SingleOrDefaultAsync(s => s.Login == login);
         if (staff is null || !staff.IsActive || staff.Role is null)
         {
-            PasswordHasher.Verify(Input.Password, DummyHash.Value); // одинаковое время ответа
+            PasswordHasher.Verify(Input!.Password ?? "", DummyHash.Value); // одинаковое время ответа
             await Audit.WriteAsync(ActorType.Staff, staff?.Id, "admin.login.failed", login, new { reason = "unknown" }, ip);
             error = Generic;
             return;
@@ -83,12 +87,12 @@
             return;
         }
 
-        var passwordOk = PasswordHasher.Verify(Input.Password, staff.PasswordHash);
+        var passwordOk = PasswordHasher.Verify(Input!.Password ?? "", staff.PasswordHash);
         var codeOk = true;
         long step = 0;
         if (staff.TotpEnabled)
             codeOk = staff.TotpSecretEnc is not null
-                     && Totp.Verify(Enc.Decrypt(staff.TotpSecretEnc), Input.Code, now, staff.TotpLastStep, out step);
+                     && Totp.Verify(Enc.Decrypt(staff.TotpSecretEnc), Input!.Code ?? "", now, staff.TotpLastStep, out step);
 
         if (!passwordOk || !codeOk)
         {
