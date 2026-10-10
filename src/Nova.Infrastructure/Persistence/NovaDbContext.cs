@@ -17,6 +17,7 @@ public class NovaDbContext(DbContextOptions<NovaDbContext> options) : DbContext(
     protected override void OnModelCreating(ModelBuilder b)
     {
         b.ApplyConfigurationsFromAssembly(typeof(NovaDbContext).Assembly);
+        b.ApplySnakeCaseNames();
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder c)

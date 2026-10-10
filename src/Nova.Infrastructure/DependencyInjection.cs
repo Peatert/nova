@@ -16,6 +16,5 @@ public static class DependencyInjection
     }
 
     internal static void Configure(DbContextOptionsBuilder o, string connectionString) =>
-        o.UseNpgsql(connectionString, npg => npg.MigrationsHistoryTable("__ef_migrations", "public"))
-         .UseSnakeCaseNamingConvention();
+        o.UseNpgsql(connectionString, npg => npg.MigrationsHistoryTable("__ef_migrations", "public"));
 }

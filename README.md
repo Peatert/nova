@@ -5,9 +5,9 @@
 
 ## Стек
 
-- .NET 9, C#
+- .NET 10 (LTS), C#
 - ASP.NET Core Minimal API
-- EF Core 9 + PostgreSQL 17 (Npgsql)
+- EF Core 10 + PostgreSQL 17 (Npgsql)
 - xUnit
 - Docker Compose
 - Позже: .NET MAUI (приложение), Blazor (админка)
@@ -41,7 +41,7 @@ Nova.sln
 
 ## Запуск
 
-Нужно: [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) и Docker Desktop.
+Нужно: [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) и Docker Desktop.
 
 ```powershell
 # 1. Инструмент миграций (один раз)

@@ -37,7 +37,7 @@ internal sealed class AccountConfig : IEntityTypeConfiguration<Account>
         e.Property(x => x.Number).HasMaxLength(20).IsFixedLength();
         e.HasIndex(x => x.Number).IsUnique();
         e.Property(x => x.Currency).HasMaxLength(3).IsFixedLength();
-        e.Property(x => x.Version).IsRowVersion(); // xmin
+        e.Property(x => x.Version).IsRowVersion().HasColumnName("xmin"); // системный столбец PostgreSQL
         e.HasIndex(x => x.ClientId);
         e.HasOne(x => x.Client).WithMany(c => c.Accounts)
             .HasForeignKey(x => x.ClientId).OnDelete(DeleteBehavior.Restrict);
